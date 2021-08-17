@@ -11,7 +11,7 @@
           :key="i"
           @click="btn(item.list_dir), (active = item.id)"
         >
-          {{ item.name }}
+          <router-link :to="'/'+item.list_dir.replace('/', '').replace('/', '')">{{ item.name }}</router-link>
           <span></span>
         </li>
       </ul>
@@ -73,7 +73,7 @@
             </template>
             <template v-else>
               <div :id="item.baidu_id" class="baidu">
-                <remote-js :src="item.url"></remote-js>
+                <!-- <remote-js :src="item.url"></remote-js> -->
               </div>
             </template>
           </li>
@@ -116,8 +116,8 @@
               </router-link>
             </template>
             <template v-else>
-              <div class="baidu">
-                <remote-js :src="item.url"></remote-js>
+              <div :id="item.baidu_id" class="baidu">
+                <!-- <remote-js :src="item.url"></remote-js> -->
               </div>
             </template>
           </li>
@@ -151,16 +151,20 @@ export default {
       baidu_box:[],
       //百度信息流
       baidu: [
-        "//m.inping.com/common/w_rq/static/o/common/sttjs.js", //6t1
-        "//m.inping.com/common/xs/openjs/r_pt/source/uuku.js", //6t2
-        "//m.inping.com/production/s/source/nm/openjs/ko_ppjc.js", //dt2 n
-        "//m.inping.com/common/y/static/t-sq-uvvlb.js", //
-        "//m.inping.com/common/w_rq/static/o/common/sttjs.js", //6t1
-        "//m.inping.com/common/xs/openjs/r_pt/source/uuku.js", //6t2
-        "//m.inping.com/production/s/source/nm/openjs/ko_ppjc.js", //dt2 n
-        "//m.inping.com/common/y/static/t-sq-uvvlb.js", //
-        "//m.inping.com/common/w_rq/static/o/common/sttjs.js", //6t1
-        "//m.inping.com/common/xs/openjs/r_pt/source/uuku.js", //6t2
+        '7644731', //6t1
+        '7644733', //6t2
+        '7644808', //dt2 n
+        '7644809', //6t3
+        
+        '7644731', //6t1
+        '7644733', //6t2
+        '7644808', //dt2 n
+        '7644809', //6t3
+        
+        '7644731', //6t1
+        '7644733', //6t2
+        '7644808', //dt2 n
+        '7644809', //6t3
       ],
       nav_id:this.$route.query.uid,
       index_a:0,
@@ -203,7 +207,6 @@ export default {
     let _this = this;
     _this.hot()
     _this.randfun(10000, 99999);
-    // baiduJs(_this.baidu_box)
   },
   methods: {
     //阅读量
@@ -285,15 +288,16 @@ export default {
           let res = response.data.data;
           let advert = _this.getRandomArrayElements(_this.baidu, res.length / 2);
           advert.forEach((a, b) => {
-            // _this.baidu_id = _this.guid();
-            // _this.baidu_box.push(_this.baidu_id)
+            _this.baidu_id = _this.guid();
+            _this.baidu_box.push(_this.baidu_id)
             res.splice((b + 1) * 2 + b, 0, {
               id: 0,
-              url: a
-              // baidu_id:_this.baidu_id
+              url: a,
+              baidu_id:_this.baidu_id
             });
           });
-         
+          //传值百度广告id和百度盒子id
+          baiduJs(_this.baidu,_this.baidu_box)
           _this.onedata = res;
         })
         .catch((error) => {
@@ -307,6 +311,7 @@ export default {
       let url;
       let _this = this;
       _this.index_a = cid;
+      console.log(_this.$route.params.lang);
       //文章id
       cid = cid.replace("/", "").replace("/", "");
       if (cid == "index") {
@@ -340,6 +345,7 @@ export default {
               baidu_id:_this.baidu_id
             });
           });
+          baiduJs(_this.baidu,_this.baidu_box)
           _this.onedata = res;
         })
         .catch((error) => {

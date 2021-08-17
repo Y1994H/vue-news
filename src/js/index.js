@@ -1,4 +1,4 @@
-function indexJs(first_cid) {
+async function indexJs(first_cid) {
     setTimeout(function(){
         let oli = $('.nav-list li');
         for (var i = 0; i < oli.length; i++) {
@@ -32,28 +32,25 @@ function indexJs(first_cid) {
     });
 }
 //百度广告
-function baiduJs(baidu_box) {
-    let baidu=[
-        "//m.inping.com/common/w_rq/static/o/common/sttjs.js", //6t1
-        "//m.inping.com/common/xs/openjs/r_pt/source/uuku.js", //6t2
-        "//m.inping.com/production/s/source/nm/openjs/ko_ppjc.js", //dt2 n
-        "//m.inping.com/common/y/static/t-sq-uvvlb.js", //
-        "//m.inping.com/common/w_rq/static/o/common/sttjs.js", //6t1
-        "//m.inping.com/common/xs/openjs/r_pt/source/uuku.js", //6t2
-        "//m.inping.com/production/s/source/nm/openjs/ko_ppjc.js", //dt2 n
-        "//m.inping.com/common/y/static/t-sq-uvvlb.js", //
-        "//m.inping.com/common/w_rq/static/o/common/sttjs.js", //6t1
-        "//m.inping.com/common/xs/openjs/r_pt/source/uuku.js", //6t2
-    ];
-    setTimeout(function(){
-        $.each(baidu_box, function (i, val) {
-            var ad_string = fgl_str(i);
-            var new_element = document.createElement("script");
-            new_element.setAttribute("type", "text/javascript");
-            new_element.setAttribute("src", ad_string);
-            document.getElementById(val).appendChild(new_element);
-        });
-    },1000)
+async function baiduJs(baidu,baidu_box) {
+    console.log(baidu_box.length);
+    $.each(baidu_box, function (i, val) {
+        var ad_string = fgl_str(i);
+        // var new_element = document.createElement("script");
+        // new_element.setAttribute("type", "text/javascript");
+        // new_element.setAttribute("src", ad_string);
+        // document.getElementById(val).appendChild(new_element);
+        (function () {
+            (window.slotbydup = window.slotbydup || []).push({
+                id:ad_string,
+                container:val,
+                async:true,
+                size: '20,12',
+                display: 'inlay-fix'
+            });
+
+        })();
+    });
     function fgl_str(ad_index) {
         var src = baidu[ad_index];
         if (ad_index === baidu.length - 1) {
@@ -61,7 +58,7 @@ function baiduJs(baidu_box) {
         } else {
             ad_index++;
         }
-        return '//' + src;
+        return src;
     };
     
 

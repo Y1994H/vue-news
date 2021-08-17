@@ -1,7 +1,8 @@
 <template>
   <div id="App">
     <router-view v-if="isRouterAlive" />
-  </div>
+    <remote-js src="//cpro.baidustatic.com/js/dm.js" async="async" defer="defer"></remote-js>
+ </div> 
 </template>
 
 <script>
@@ -10,6 +11,18 @@ var htmlTag = document.getElementsByTagName("html")[0];
 htmlTag.style.fontSize = bw;
 
 export default {
+  components: {
+    "remote-js": {
+      render(createElement) {
+        return createElement("script", {
+          attrs: { type: "text/javascript", src: this.src },
+        });
+      },
+      props: {
+        src: { type: String, required: true },
+      },
+    },
+  },
   name: 'App',
   data() {
         return{

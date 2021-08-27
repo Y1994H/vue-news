@@ -33,7 +33,6 @@ async function indexJs(first_cid) {
 }
 //百度广告
 async function baiduJs(baidu,baidu_box) {
-    console.log(baidu_box.length);
     $.each(baidu_box, function (i, val) {
         var ad_string = fgl_str(i);
         // var new_element = document.createElement("script");

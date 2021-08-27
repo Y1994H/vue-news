@@ -6,12 +6,12 @@
           ref="navli"
           class="nav_a"
           v-for="(item, i) in NewsList"
-          :data-id="item.list_dir"
+          :data-id="item.list_dir.replace('/', '').replace('/', '')"
           :class="active === item.id ? 'active' : 'active_a'"
           :key="i"
           @click="btn(item.list_dir), (active = item.id)"
         >
-          <router-link :to="'/'+item.list_dir.replace('/', '').replace('/', '')">{{ item.name }}</router-link>
+          {{ item.name }}
           <span></span>
         </li>
       </ul>
@@ -166,14 +166,14 @@ export default {
         '7644808', //dt2 n
         '7644809', //6t3
       ],
-      nav_id:this.$route.query.uid,
+      nav_id:this.$route.query.active,
       index_a:0,
       ximg: "?x-oss-process=style/mxiaotu2",
       imgUrl: logoSrc,
       first_cid: null, //id
       page: 1, //页码数
       size: 20, //请求数量
-      active: 0,
+      active: this.$route.query.active || 0,
       visible: true,
       rand: null,
       NewsList: null, //导航数据
@@ -199,15 +199,28 @@ export default {
       dataList: [], // 列表数据
     };
   },
+  watch: {
+    active (newValue) {
+      let query = this.$router.history.current.query;
+      let path = this.$router.history.current.path;
+      //对象的拷贝
+      let newQuery = JSON.parse(JSON.stringify(query));
+      // 地址栏的参数值赋值
+      newQuery.active = newValue;
+      this.$router.push({ path, query: newQuery });
+    }
+  },
   created() {
     //导航
      this.getNav();
+     indexJs();
   },
   mounted() {
     let _this = this;
     _this.hot()
     _this.randfun(10000, 99999);
   },
+
   methods: {
     //阅读量
     randfun(min, max) {
@@ -311,7 +324,6 @@ export default {
       let url;
       let _this = this;
       _this.index_a = cid;
-      console.log(_this.$route.params.lang);
       //文章id
       cid = cid.replace("/", "").replace("/", "");
       if (cid == "index") {

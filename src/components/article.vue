@@ -4,7 +4,7 @@
     <div class="nav">
       <router-link :to="{path:'/'}">首页</router-link>
         <i></i>
-      <router-link :to="{path:'/',query:{uid:nav_id}}">{{nav_tit}}</router-link>
+      <router-link :to="{path:'/',query:{active:nav_id}}">{{nav_tit}}</router-link>
     </div>
       <h1 class="title">{{article_txt.title}}</h1>
       <div class="time">{{article_txt.update_time | moment("YYYY-MM-DD HH:mm:ss")}}</div>

@@ -1,7 +1,7 @@
 <template>
   <div class="app">
-    <header>
-      <ul ref="nav" class="nav-list">
+    <nav>
+      <!-- <ul ref="nav" class="nav-list">
         <li
           ref="navli"
           class="nav_a"
@@ -14,8 +14,15 @@
           {{ item.name }}
           <span></span>
         </li>
-      </ul>
-    </header>
+      </ul> -->
+      <ly-tab 
+        v-model="selectedId" 
+        :options="options" 
+        :items="NewsList"
+        @change="handleChange"
+         >
+      </ly-tab>
+    </nav>
     <div class="newslist">
       <mescroll-vue ref="mescroll" :down="getMescrollDown()" :up="mescrollUp">
         <div
@@ -24,7 +31,7 @@
           :key="item.id + index"
           v-show="visible"
         >
-          <router-link :to="'/article/' + item.id">
+          <router-link :to="'/article/' + item.id + '?from='+from">
             <span>头条</span>
             {{ item.title }}
           </router-link>
@@ -38,7 +45,7 @@
             <template v-if="item.id > 0">
               <router-link
                 class="news_san"
-                :to="'/article/' + item.id"
+                :to="'/article/' + item.id + '?from='+from" 
                 v-if="item.all_img.length == 3"
               >
                 <div class="news_right">
@@ -56,7 +63,7 @@
               </router-link>
               <router-link
                 class="news_dan"
-                :to="'/article/' + item.id"
+                :to="'/article/' + item.id + '?from='+from" 
                 v-if="item.all_img.length == 0"
               >
                 <div class="news_left">
@@ -82,7 +89,7 @@
             <template v-if="item.id > 0">
               <router-link
                 class="news_san"
-                :to="'/article/' + item.id"
+                :to="'/article/' + item.id + '?from='+from" 
                 v-if="item.all_img.length == 3"
               >
                 <div class="news_right">
@@ -100,7 +107,7 @@
               </router-link>
               <router-link
                 class="news_dan"
-                :to="'/article/' + item.id"
+                :to="'/article/' + item.id + '?from='+from" 
                 v-if="item.all_img.length == 0"
               >
                 <div class="news_left">
@@ -146,6 +153,11 @@ export default {
   },
   data() {
     return {
+      selectedId: 0,
+      options: {
+        activeColor: '#78d5f7',
+        labelKey: 'name' // 在sortList数组中选择想要渲染的key名
+      },
       //百度id
       baidu_id:null,
       baidu_box:[],
@@ -166,7 +178,6 @@ export default {
         '7644808', //dt2 n
         '7644809', //6t3
       ],
-      nav_id:this.$route.query.active,
       index_a:0,
       ximg: "?x-oss-process=style/mxiaotu2",
       imgUrl: logoSrc,
@@ -176,7 +187,8 @@ export default {
       active: this.$route.query.active || 0,
       visible: true,
       rand: null,
-      NewsList: null, //导航数据
+      from:null,//渠道
+      NewsList: [], //导航数据
       errored: false,
       onedata: [], //第一次加载数据
       hotdata: null, //热点数据
@@ -212,15 +224,16 @@ export default {
   },
   created() {
     //导航
-     this.getNav();
+    let _this = this;
+     _this.getNav();
      indexJs();
+    _this.from = _this.getQueryString('from');
   },
   mounted() {
     let _this = this;
     _this.hot()
     _this.randfun(10000, 99999);
   },
-
   methods: {
     //阅读量
     randfun(min, max) {
@@ -244,10 +257,11 @@ export default {
             list_dir: "/index/",
             pid: 0,
           });
-          if(_this.nav_id!=undefined){
-              _this.active = parseInt(_this.nav_id);
+          if(_this.active!=undefined){
+              _this.active = parseInt(_this.active);
               _this.NewsList.forEach((i,k)=>{
                 if(i.id == _this.active) {
+                  _this.selectedId = k;
                   _this.first_cid = i.list_dir.replace("/", "").replace("/", "");
                   _this.Newsdata(_this.first_cid);
                   indexJs(this.first_cid)
@@ -284,9 +298,11 @@ export default {
     Newsdata(nav_cid) {
         let _this = this;
         let url;
-        url = "//mini.yyrtv.com/api/get_mobile_redian";
-        if(_this.nav_id!=undefined){
-          _this.onedata = [];
+        _this.onedata = [];
+        if(_this.active == 0){
+          url = "//mini.yyrtv.com/api/new_ajaxlist?cid=";
+          _this.visible = true;
+        }else{
           _this.visible = false;
           url = "//mini.yyrtv.com/api/new_ajaxlist?cid=" + nav_cid;
         }; 
@@ -310,7 +326,7 @@ export default {
             });
           });
           //传值百度广告id和百度盒子id
-          baiduJs(_this.baidu,_this.baidu_box)
+          // baiduJs(_this.baidu,_this.baidu_box)
           _this.onedata = res;
         })
         .catch((error) => {
@@ -318,6 +334,53 @@ export default {
           _this.errored = true;
         });
 
+    },
+    handleChange(item,index){
+      let _this = this;
+      let cid = item.list_dir.replace("/", "").replace("/", "");;
+      let url;
+      _this.active = item.id;
+      _this.index_a = cid;
+      //文章id
+      if (cid == "index") {
+        _this.visible = true;
+        url = "//mini.yyrtv.com/api/get_mobile_redian";
+      } else {
+        _this.visible = false;
+        url = "//mini.yyrtv.com/api/new_ajaxlist?cid=" + cid;
+      }
+      _this.mescrollUp.page.num = 1;
+      _this.first_cid = cid;
+      //首屏
+      _this.onedata = [];
+      //下拉信息流
+      _this.dataList = [];
+      _this.$axios
+        .get(url, {
+          params: {
+            page: _this.page,
+            size: _this.size,
+          },
+        })
+        .then((response) => {
+          let res = response.data.data;
+          let advert = _this.getRandomArrayElements(_this.baidu, res.length / 2);
+          advert.forEach((a, b) => {
+            _this.baidu_id = _this.guid();
+            res.splice((b + 1) * 2 + b, 0, {
+              id: 0,
+              url: a,
+              baidu_id:_this.baidu_id
+            });
+          });
+          // baiduJs(_this.baidu,_this.baidu_box)
+          _this.onedata = res;
+        })
+        .catch((error) => {
+          console.log(error);
+          _this.errored = true;
+        });
+              
     },
     //点击导航请求数据
     btn(cid) {
@@ -357,7 +420,7 @@ export default {
               baidu_id:_this.baidu_id
             });
           });
-          baiduJs(_this.baidu,_this.baidu_box)
+          // baiduJs(_this.baidu,_this.baidu_box)
           _this.onedata = res;
         })
         .catch((error) => {
@@ -427,6 +490,22 @@ export default {
           mescroll.endErr();
         });
     },
+
+    // 获取地址栏参数
+    getQueryString(name) {
+      
+      var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+      var reg_rewrite = new RegExp("(^|/)" + name + "/([^/]*)(/|$)", "i");
+      var r = window.location.search.substr(1).match(reg);
+      var q = window.location.pathname.substr(1).match(reg_rewrite);
+      if(r != null){
+        return unescape(r[2]);
+      }else if(q != null){
+        return unescape(q[2]);
+      }else{
+        return null;
+      }
+    },
      //随机取出几个数组
     getRandomArrayElements(arr, count) {
       let shuffled = arr.slice(0),
@@ -451,6 +530,18 @@ export default {
 </script>
 
 <style scoped>
+.ly-tab-item {
+  text-decoration: none;
+  text-align: center;
+}
+  .ly-tab-item-icon {
+    margin: 0 auto 5px;
+  }
+  .ly-tab-item-label {
+    margin: 0 auto 10px;
+    line-height: 18px;
+  }
+
 .mescroll {
   position: fixed;
   top: 44px;
@@ -461,14 +552,17 @@ export default {
   width: 100%;
   height: 100%;
 }
-header {
+ul::-webkit-scrollbar {
+        display: none;
+}
+nav {
   position: fixed;
   top: 0;
   z-index: 5;
   width: 100%;
   background: #f4f5f6;
 }
-header ul {
+nav ul {
   width: 100%;
   height: 0.8rem;
   overflow-x: scroll;
@@ -476,7 +570,7 @@ header ul {
   justify-content: space-around;
   align-items: center;
 }
-header ul li {
+nav ul li {
   color: #505050;
   font-size: 0.32rem;
   padding: 0 0.2rem;

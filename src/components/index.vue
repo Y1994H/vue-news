@@ -1,6 +1,9 @@
 <template>
   <div class="app">
     <nav>
+      <header>
+        <a href="http://">快资讯</a>
+      </header>
       <!-- <ul ref="nav" class="nav-list">
         <li
           ref="navli"
@@ -24,7 +27,7 @@
       </ly-tab>
     </nav>
     <div class="newslist">
-      <mescroll-vue ref="mescroll" :down="getMescrollDown()" :up="mescrollUp">
+      <mescroll-vue ref="mescroll" :down="mescrollDown" :up="mescrollUp" @init="mescrollInit">
         <div
           class="hot"
           v-for="(item, index) in hotdata"
@@ -131,14 +134,19 @@
         </ul>
       </mescroll-vue>
     </div>
+    <div class="refresh-fixed" @click="Refresh"></div>
+    <div class="noti_hide">为您推荐20条更新</div>
   </div>
 </template>
 
 <script>
+import MescrollVue from 'mescroll.js/mescroll.vue'
 import logoSrc from "@/image/ss.svg";
 import { indexJs,baiduJs } from "@/js/index.js";
 
 export default {
+  
+  MescrollVue, // 注册mescroll组件
   components: {
     "remote-js": {
       render(createElement) {
@@ -155,9 +163,12 @@ export default {
     return {
       selectedId: 0,
       options: {
-        activeColor: '#78d5f7',
+        activeColor: '#f85959',
         labelKey: 'name' // 在sortList数组中选择想要渲染的key名
       },
+      navurl:'//mini.yyrtv.com/api/get_mobile_menu',//导航接口
+      hoturl:'//mini.yyrtv.com/api/get_mobile_hot',//热点接口
+      newsurl:'//mini.yyrtv.com/mapi/new_ajaxlist?cid=',//信息流接口
       //百度id
       baidu_id:null,
       baidu_box:[],
@@ -184,8 +195,9 @@ export default {
       first_cid: null, //id
       page: 1, //页码数
       size: 20, //请求数量
-      active: this.$route.query.active || 0,
+      active: this.$route.query.active || 'tuijian',
       visible: true,
+      notihide:false,
       rand: null,
       from:null,//渠道
       NewsList: [], //导航数据
@@ -194,19 +206,29 @@ export default {
       hotdata: null, //热点数据
       hotpage: 1,
       mescroll: null, // mescroll实例对象
+      mescrollDown:{
+        callback: this.downCallback,
+        auto: false,
+        use: true,
+        isLock: false,
+        offset: 80,
+        empty: {
+            tip: "暂无相关数据~"
+        }
+      },
       mescrollUp: {
         use: true,
         auto: false, // 上拉加载的配置.
         callback: this.upCallback, // 上拉回调,此处简写; 相当于 callback: function(page, mescroll) { }//以下是一些常用的配置,当然不写也可以的.
-        page: {
-          num: 1, //当前页 默认0,回调之前会加1; 即callback(page)会从1开始
-          size: 20, //每页数据条数,默认10
-        },
-        toTop: {
-          //回到顶部按钮
-          src: logoSrc, //图片路径,默认null,支持网络图
-          offset: 1000, //列表滚动1000px才显示回到顶部按钮
-        },
+        // page: {
+        //   num: this.page, //当前页 默认0,回调之前会加1; 即callback(page)会从1开始
+        //   size: this.size, //每页数据条数,默认10
+        // },
+        // toTop: {
+        //   //回到顶部按钮
+        //   src: logoSrc, //图片路径,默认null,支持网络图
+        //   offset: 1000, //列表滚动1000px才显示回到顶部按钮
+        // },
       },
       dataList: [], // 列表数据
     };
@@ -226,12 +248,12 @@ export default {
     //导航
     let _this = this;
      _this.getNav();
+     _this.hot(); 
      indexJs();
     _this.from = _this.getQueryString('from');
   },
   mounted() {
     let _this = this;
-    _this.hot()
     _this.randfun(10000, 99999);
   },
   methods: {
@@ -246,30 +268,42 @@ export default {
     getNav() {
       let _this = this;
       _this.$axios
-        .get("//mini.yyrtv.com/api/get_mobile_menu")
+        .get(_this.navurl)
         .then((response) => {
           //导航数据
-          _this.NewsList = response.data.data;
-          _this.NewsList.unshift({
-            id: 0,
-            pid: 0,
-            name: "热点",
-            list_dir: "/index/",
-            pid: 0,
-          });
-          if(_this.active!=undefined){
-              _this.active = parseInt(_this.active);
-              _this.NewsList.forEach((i,k)=>{
-                if(i.id == _this.active) {
-                  _this.selectedId = k;
-                  _this.first_cid = i.list_dir.replace("/", "").replace("/", "");
-                  _this.Newsdata(_this.first_cid);
-                  indexJs(this.first_cid)
+          _this.NewsList = response.data.data; 
+            let id1 = _this.NewsList.findIndex(item => {
+              if(item.name == '社会'){
+                return true;
+              }
+            })
+            _this.NewsList.splice(id1, 1)
+            let id2 = _this.NewsList.findIndex(item => {
+                if(item.name == '国际'){
+                  return true;
                 }
             })
-          }else{
-                _this.Newsdata();
-              };
+            _this.NewsList.splice(id2, 1)
+            let id3 = _this.NewsList.findIndex(item => {
+              if(item.name == '历史'){
+                return true;
+              }
+            })
+            _this.NewsList.splice(id3, 1)
+          _this.NewsList.forEach((i,k)=>{
+             //判断数据里面的值是否与URL中的active值一样
+            if(i.list_dir.replace("/", "").replace("/", "") == _this.active) {
+                //导航高亮
+                _this.selectedId = k;
+                _this.first_cid = i.list_dir.replace("/", "").replace("/", "");
+                if(_this.first_cid === 'tuijian'){
+                    _this.Newsdata(_this.first_cid);
+                    _this.hot();
+                }
+                indexJs(this.first_cid)
+            }
+        })
+  
         })
         .catch((error) => {
           console.log(error);
@@ -279,33 +313,35 @@ export default {
     
     //热点
     hot() {
-      this.$axios
-        .get("//mini.yyrtv.com/api/get_mobile_hot", {
+      let _this = this;
+      _this.$axios
+        .get(_this.hoturl, {
           params: {
-            page: this.hotpage,
+            page: _this.hotpage,
             size: 1,
           },
         })
         .then((response) => {
-          this.hotdata = response.data.data;
+          _this.hotdata = response.data.data;
         })
         .catch((error) => {
           console.log(error);
-          this.errored = true;
+          _this.errored = true;
         });
     },
     //首次新闻列表加载
     Newsdata(nav_cid) {
+      console.log(nav_cid);
         let _this = this;
-        let url;
+        let url = _this.newsurl + nav_cid;
         _this.onedata = [];
-        if(_this.active == 0){
-          url = "//mini.yyrtv.com/api/new_ajaxlist?cid=";
+        console.log(_this.active );
+        if(nav_cid == 'tuijian'){
           _this.visible = true;
         }else{
           _this.visible = false;
-          url = "//mini.yyrtv.com/api/new_ajaxlist?cid=" + nav_cid;
         }; 
+        
       _this.$axios
         .get(url, {
           params: {
@@ -328,6 +364,7 @@ export default {
           //传值百度广告id和百度盒子id
           // baiduJs(_this.baidu,_this.baidu_box)
           _this.onedata = res;
+        
         })
         .catch((error) => {
           console.log(error);
@@ -335,21 +372,20 @@ export default {
         });
 
     },
+    //点击导航
     handleChange(item,index){
       let _this = this;
       let cid = item.list_dir.replace("/", "").replace("/", "");;
-      let url;
-      _this.active = item.id;
+      let url = _this.newsurl + cid;
+      _this.page = 1;
+      _this.active = cid;
       _this.index_a = cid;
       //文章id
-      if (cid == "index") {
+      if (cid === "tuijian") {
         _this.visible = true;
-        url = "//mini.yyrtv.com/api/get_mobile_redian";
       } else {
         _this.visible = false;
-        url = "//mini.yyrtv.com/api/new_ajaxlist?cid=" + cid;
       }
-      _this.mescrollUp.page.num = 1;
       _this.first_cid = cid;
       //首屏
       _this.onedata = [];
@@ -382,86 +418,63 @@ export default {
         });
               
     },
-    //点击导航请求数据
-    btn(cid) {
-      let url;
+    //点击刷新
+    Refresh(){
       let _this = this;
-      _this.index_a = cid;
-      //文章id
-      cid = cid.replace("/", "").replace("/", "");
-      if (cid == "index") {
-        _this.visible = true;
-        url = "//mini.yyrtv.com/api/get_mobile_redian";
-      } else {
-        _this.visible = false;
-        url = "//mini.yyrtv.com/api/new_ajaxlist?cid=" + cid;
-      }
-      _this.mescrollUp.page.num = 1;
-      _this.first_cid = cid;
-      //首屏
-      _this.onedata = [];
-      //下拉信息流
-      _this.dataList = [];
-      _this.$axios
-        .get(url, {
-          params: {
-            page: _this.page,
-            size: _this.size,
-          },
-        })
-        .then((response) => {
-          let res = response.data.data;
-          let advert = _this.getRandomArrayElements(_this.baidu, res.length / 2);
-          advert.forEach((a, b) => {
-            _this.baidu_id = _this.guid();
-            res.splice((b + 1) * 2 + b, 0, {
-              id: 0,
-              url: a,
-              baidu_id:_this.baidu_id
-            });
-          });
-          // baiduJs(_this.baidu,_this.baidu_box)
-          _this.onedata = res;
-        })
-        .catch((error) => {
-          console.log(error);
-          _this.errored = true;
-        });
+      $('.mescroll').animate({
+          scrollTop: 0
+      }, 0);
+      _this.mescroll.showDownScroll();
+      setTimeout(function(){
+        _this.mescroll.triggerDownScroll();
+      },500)
     },
     mescrollInit(mescroll) {
-      _this.mescroll = mescroll; // 如果this.mescroll对象没有使用到,则mescrollInit可以不用配置
+      this.mescroll = mescroll; // 如果this.mescroll对象没有使用到,则mescrollInit可以不用配置
     },
-    //禁止getMescrollDown事件
-    getMescrollDown() {
-      return {
-        use: false,
-        auto: false,
-        callback: this.downCallback,
-      };
+    downCallback(mescroll) {
+      let _this = this;
+      mescroll.resetUpScroll(); 
+      //  //首屏
+      _this.onedata = [];
+      // //下拉信息流
+      _this.dataList = [];
+      setTimeout(()=>{
+        // 隐藏下拉加载状态
+        mescroll.endErr();
+        // _this.notihide = true;
+        $('.noti_hide').css({
+          'top':'1.6rem',
+        });
+        setTimeout(()=>{
+          $('.noti_hide').css({
+            'top':'0',
+          });
+        },1000)
+      },1000)
+     
     },
-    downCallback() {},
     //下拉加载
     upCallback(page, mescroll) {
       let _this = this;
-      let url;
+      let url =  _this.newsurl+ _this.first_cid;
+      _this.page++
       if(_this.first_cid == null) {
           _this.index_a = 'rem'
         }else{
           _this.index_a = _this.first_cid;
         }
-      if (_this.first_cid == "index") {
+      if (_this.first_cid == "tuijian") {
         _this.visible = true;
-        url = "//mini.yyrtv.com/api/get_mobile_redian";
       } else {
         _this.visible = false;
-        url = "//mini.yyrtv.com/api/new_ajaxlist?cid=" + _this.first_cid;
       }
       // 联网请求
       _this.$axios
         .get(url, {
           params: {
-            page: page.num,
-            size: page.size,
+            page: _this.page,
+            size: _this.size,
           },
         })
         .then((response) => {
@@ -493,7 +506,6 @@ export default {
 
     // 获取地址栏参数
     getQueryString(name) {
-      
       var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
       var reg_rewrite = new RegExp("(^|/)" + name + "/([^/]*)(/|$)", "i");
       var r = window.location.search.substr(1).match(reg);
@@ -530,21 +542,9 @@ export default {
 </script>
 
 <style scoped>
-.ly-tab-item {
-  text-decoration: none;
-  text-align: center;
-}
-  .ly-tab-item-icon {
-    margin: 0 auto 5px;
-  }
-  .ly-tab-item-label {
-    margin: 0 auto 10px;
-    line-height: 18px;
-  }
-
 .mescroll {
   position: fixed;
-  top: 44px;
+  top: 80px;
   bottom: 0;
   height: auto;
 }
@@ -552,19 +552,32 @@ export default {
   width: 100%;
   height: 100%;
 }
-ul::-webkit-scrollbar {
-        display: none;
-}
+
 nav {
   position: fixed;
   top: 0;
   z-index: 5;
   width: 100%;
+   height: 36px;
   background: #f4f5f6;
+}
+header {
+  height: 44px;
+  line-height: 44px;
+  background: #e23f3f;
+  text-align: center;
+  position: relative;
+}
+header a {
+    display: inline-block;
+    background: url(https://p4.ssl.img.360kuai.com/t01ccd7f57276ef0a47.png) center no-repeat;
+    text-indent: -9999px;
+    background-size: 83px;
+    width: 83px;
 }
 nav ul {
   width: 100%;
-  height: 0.8rem;
+  height: 36px;
   overflow-x: scroll;
   display: -webkit-box;
   justify-content: space-around;
@@ -642,7 +655,7 @@ nav ul li {
   padding-bottom: 0.2rem;
   border-bottom: 1px solid #ddd;
 }
-.baidu {
+/* .baidu {
   width: 7.1rem;
   height: auto;
   overflow: hidden;
@@ -650,7 +663,7 @@ nav ul li {
   padding-top: 0.2rem;
   padding-bottom: 0.2rem;
   border-bottom: 1px solid #ddd;
-}
+} */
 .newslist ul .news_left {
   float: left;
   width: 2.34rem;
@@ -720,5 +733,45 @@ nav ul li {
 .mescroll-totop {
   box-shadow: 0 0 6px #8e8e8e;
   background-color: hsla(0, 0%, 100%, 0.9);
+}
+.refresh-fixed {
+    position: fixed;
+    bottom: 20px;
+    right: 15px;
+    width: 55px;
+    height: 55px;
+    background: url(../image/shuaxin.png) no-repeat;
+    background-size: cover;
+}
+.noti_hide{
+    background: #d6e9f7;
+    color: #2a90d7;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: .6rem;
+    line-height: 4.8px;
+    line-height: .6rem;
+    text-align: center;
+    font-size: 1.92px;
+    font-size: .12rem;
+    -webkit-animation: top .3s;
+    animation: top .3s;
+}
+.ly-tab{
+  position: relative;
+  background-color: #f5f5f5;
+}
+.ly-tab:before {
+    content: ' ';
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABsCAQAAAA/U3/IAAAAjUlEQVR42u3ROw6AIABEQUDwc/+z2muIGiil08zbCFpODEGSJEnSYHHPoZybw1K31m3nd3mWmzs3m+pzLzV3ut5Sd/aL3Rm780Xp638AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAODPAEmSJEnDHdhJApBByRhCAAAAAElFTkSuQmCC);
+    background-size: 100%;
+    width: 30px;
+    z-index: 1;
 }
 </style>

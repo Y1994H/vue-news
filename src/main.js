@@ -8,6 +8,7 @@ import $ from 'jquery';
 import LyTab from 'ly-tab';
 import MescrollVue from 'mescroll.js/mescroll.vue';
 import VueLazyload from 'vue-lazyload';
+import 'normalize.css/normalize.css';
 Vue.use(LyTab);
 Vue.use(VueLazyload, {
   preLoad: 1,

@@ -40,7 +40,7 @@ export default {
     /* font-size: 10px; */
 }
 html{
-    color: #000000;
+    color: #2c2c2c;
     width: 100%;
 }
 body{
@@ -107,7 +107,7 @@ img {
 
 a {
 	text-decoration: none;
-	color: #333;
+	color: #2c2c2c;
 }
 
 h1,
@@ -125,10 +125,8 @@ h6 {
     box-shadow: 0 0 6px #8e8e8e;
     background-color: hsla(0,0%,100%,.9);
   }
-.mescroll-downwarp{
-  display: none;
-}  
 .content_html>p>img{
   margin: 5px auto;
+  width: 100% !important;
 }
 </style>

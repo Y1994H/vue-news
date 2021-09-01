@@ -1,13 +1,17 @@
 <template>
-  <mescroll-vue ref="mescroll" :down="getMescrollDown()" :up="mescrollUp">
+  <!-- <mescroll-vue ref="mescroll" :down="getMescrollDown()" :up="mescrollUp"> -->
+  <div>
+      <header>
+      <a href="http://">快资讯</a>
+    </header>
     <div class="content">
-      <div class="nav">
+      <!-- <div class="nav">
         <router-link :to="{ path: '/?from='+from }">首页</router-link>
         <i></i>
         <router-link :to="{ path: '/?from='+from, query: { active: nav_id } }">{{
           nav_tit
         }}</router-link>
-      </div>
+      </div> -->
       <h1 class="title">{{ article_txt.title }}</h1>
       <div class="time">
         {{ article_txt.update_time | moment("YYYY-MM-DD HH:mm:ss") }}
@@ -24,13 +28,13 @@
           :style="{ fontSize: postFontSize / 100 + 'rem' }"
         ></div>
       </div>
-      <div class="tuijai">
+      <!-- <div class="tuijai">
         <div class="wn_tj">为你推荐</div>
         <div class="hong"></div>
         <div class="hui"></div>
-      </div>
+      </div> -->
       <div class="newslist">
-        <ul>
+        <!-- <ul>
           <li
             class="news_li"
             v-for="(item, index) in onedata"
@@ -65,9 +69,9 @@
                 <div class="news_ly">{{ item.source }}</div>
               </div>
             </router-link>
-          </li>
+          </li> -->
           <!-- 下拉信息流 -->
-          <li v-for="(item, index) in dataList" :key="index + index_a">
+          <!-- <li v-for="(item, index) in dataList" :key="index + index_a">
             <router-link
               class="news_san"
               :to="'/article/' + item.id + '?from=' + from"
@@ -95,11 +99,12 @@
                 <div class="news_ly">{{ item.source }}</div>
               </div>
             </router-link>
-          </li>
-        </ul>
+          </li> 
+        </ul>-->
       </div>
     </div>
-  </mescroll-vue>
+  </div>
+  <!-- </mescroll-vue> -->
 </template>
 <script>
 import logoSrc from "@/image/ss.svg";
@@ -139,7 +144,7 @@ export default {
     _this.from = _this.getQueryVariable("from");
     //请求文章数据
     _this.$axios
-      .get("//mini.yyrtv.com/api/get_artical_info?article_id=" + _this.id)
+      .get("//mini.yyrtv.com/mapi/get_artical_info?article_id=" + _this.id)
       .then((response) => {
         (_this.article_txt = response.data.data),
           //文章内容
@@ -237,6 +242,7 @@ export default {
   height: 100%;
   overflow: hidden;
   margin: 0 auto;
+  padding-bottom: .3rem;
 }
 .mescroll {
   position: fixed;
@@ -286,6 +292,7 @@ export default {
 }
 .article_content img {
   margin: 0.15rem 0;
+  width: 100% !important;
 }
 .content_html {
   width: 100%;
@@ -435,5 +442,22 @@ export default {
   transform: rotate(-45deg);
   -webkit-transform: rotate(-45deg);
   margin: 6px 6px;
+}
+.mescroll-upwarp{
+  display: none !important;
+}
+header {
+  height: 44px;
+  line-height: 44px;
+  background: #e23f3f;
+  text-align: center;
+  position: relative;
+}
+header a {
+    display: inline-block;
+    background: url(https://p4.ssl.img.360kuai.com/t01ccd7f57276ef0a47.png) center no-repeat;
+    text-indent: -9999px;
+    background-size: 83px;
+    width: 83px;
 }
 </style>

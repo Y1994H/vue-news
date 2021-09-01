@@ -146,12 +146,13 @@ export default {
     _this.$axios
       .get("//mini.yyrtv.com/mapi/get_artical_info?article_id=" + _this.id)
       .then((response) => {
+        // console.log(response.data.data.content[0]);
         (_this.article_txt = response.data.data),
           //文章内容
           (_this.article_content = response.data.data.content[0]),
           //导航
           (_this.nav_tit = response.data.data.cate_name);
-        _this.nav_id = response.data.data.cate_id;
+          // _this.nav_id = response.data.data.cate_id;
       })
       .catch((error) => {
         _this.errored = true;

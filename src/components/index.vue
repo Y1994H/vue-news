@@ -135,18 +135,14 @@
       </mescroll-vue>
     </div>
     <div class="refresh-fixed" @click="Refresh"></div>
-    <div class="noti_hide">为您推荐20条更新</div>
+    <div class="noti_hide"></div>
   </div>
 </template>
 
 <script>
-import MescrollVue from 'mescroll.js/mescroll.vue'
 import logoSrc from "@/image/ss.svg";
-import { indexJs,baiduJs } from "@/js/index.js";
-
+import { baiduJs } from "@/js/index.js";
 export default {
-  
-  MescrollVue, // 注册mescroll组件
   components: {
     "remote-js": {
       render(createElement) {
@@ -214,12 +210,16 @@ export default {
         offset: 80,
         empty: {
             tip: "暂无相关数据~"
-        }
+        },
+        htmlNodata: '<p class="upwarp-nodata">-- END --</p>',
+        noMoreSize: 5,
       },
       mescrollUp: {
         use: true,
         auto: false, // 上拉加载的配置.
         callback: this.upCallback, // 上拉回调,此处简写; 相当于 callback: function(page, mescroll) { }//以下是一些常用的配置,当然不写也可以的.
+        htmlNodata: '<p class="upwarp-nodata">-- 暂无数据 --</p>',
+        noMoreSize: 5,
         // page: {
         //   num: this.page, //当前页 默认0,回调之前会加1; 即callback(page)会从1开始
         //   size: this.size, //每页数据条数,默认10
@@ -249,7 +249,6 @@ export default {
     let _this = this;
      _this.getNav();
      _this.hot(); 
-     indexJs();
     _this.from = _this.getQueryString('from');
   },
   mounted() {
@@ -279,9 +278,9 @@ export default {
             })
             _this.NewsList.splice(id1, 1)
             let id2 = _this.NewsList.findIndex(item => {
-                if(item.name == '国际'){
-                  return true;
-                }
+              if(item.name == '国际'){
+                return true;
+              }
             })
             _this.NewsList.splice(id2, 1)
             let id3 = _this.NewsList.findIndex(item => {
@@ -291,16 +290,16 @@ export default {
             })
             _this.NewsList.splice(id3, 1)
           _this.NewsList.forEach((i,k)=>{
-             //判断数据里面的值是否与URL中的active值一样
-            if(i.list_dir.replace("/", "").replace("/", "") == _this.active) {
+            //判断数据里面的值是否与URL中的active值一样
+            let list_dir = i.list_dir.replace("/", "").replace("/", "");
+            if( list_dir == _this.active) {
                 //导航高亮
                 _this.selectedId = k;
-                _this.first_cid = i.list_dir.replace("/", "").replace("/", "");
-                if(_this.first_cid === 'tuijian'){
-                    _this.Newsdata(_this.first_cid);
+                // _this.first_cid = list_dir;
+                if(_this.active === 'tuijian'){
+                    _this.Newsdata(_this.active);
                     _this.hot();
                 }
-                indexJs(this.first_cid)
             }
         })
   
@@ -331,11 +330,9 @@ export default {
     },
     //首次新闻列表加载
     Newsdata(nav_cid) {
-      console.log(nav_cid);
         let _this = this;
         let url = _this.newsurl + nav_cid;
         _this.onedata = [];
-        console.log(_this.active );
         if(nav_cid == 'tuijian'){
           _this.visible = true;
         }else{
@@ -364,7 +361,7 @@ export default {
           //传值百度广告id和百度盒子id
           // baiduJs(_this.baidu,_this.baidu_box)
           _this.onedata = res;
-        
+          _this.mescrollDown.use = true;
         })
         .catch((error) => {
           console.log(error);
@@ -386,7 +383,7 @@ export default {
       } else {
         _this.visible = false;
       }
-      _this.first_cid = cid;
+      // _this.first_cid = cid;
       //首屏
       _this.onedata = [];
       //下拉信息流
@@ -411,6 +408,7 @@ export default {
           });
           // baiduJs(_this.baidu,_this.baidu_box)
           _this.onedata = res;
+          _this.mescrollDown.use = true;
         })
         .catch((error) => {
           console.log(error);
@@ -457,14 +455,14 @@ export default {
     //下拉加载
     upCallback(page, mescroll) {
       let _this = this;
-      let url =  _this.newsurl+ _this.first_cid;
+      let url =  _this.newsurl+ _this.active;
       _this.page++
-      if(_this.first_cid == null) {
+      if(_this.active == null) {
           _this.index_a = 'rem'
         }else{
-          _this.index_a = _this.first_cid;
+          _this.index_a = _this.active;
         }
-      if (_this.first_cid == "tuijian") {
+      if (_this.active == "tuijian") {
         _this.visible = true;
       } else {
         _this.visible = false;
@@ -480,23 +478,33 @@ export default {
         .then((response) => {
           // 请求的列表数据
           let arr = response.data.data;
-          let advert = _this.getRandomArrayElements(
-            _this.baidu,
-            arr.length / 2
-          );
-          advert.forEach((a, b) => {
-            arr.splice((b + 1) * 2 + b, 0, {
-              id: 0,
-              url: a,
+          console.log();
+          if(arr != 0){
+            let advert = _this.getRandomArrayElements(
+              _this.baidu,
+              arr.length / 2
+            );
+            advert.forEach((a, b) => {
+              arr.splice((b + 1) * 2 + b, 0, {
+                id: 0,
+                url: a,
+              });
             });
-          });
-          // 如果是第一页需手动置空列表
-          if (page.num == 1) _this.dataList = [];
-          _this.dataList = _this.dataList.concat(arr);
-          // 数据渲染成功后,隐藏下拉刷新的状态
-          _this.$nextTick(() => {
-            mescroll.endSuccess(arr.length);
-          });
+            // 如果是第一页需手动置空列表
+            if (page.num == 1) _this.dataList = [];
+            _this.dataList = _this.dataList.concat(arr);
+            // 数据渲染成功后,隐藏下拉刷新的状态
+            _this.$nextTick(() => {
+              mescroll.endSuccess(arr.length);
+              _this.mescrollDown.use = true;
+              $('.noti_hide').html('为您推荐'+arr.length+'条更新')
+            });
+          }else{
+              mescroll.endSuccess(arr.length);
+              _this.mescrollDown.use = false;
+              $('.noti_hide').html('暂无数据~')
+          }
+          
         })
         .catch((e) => {
           // 联网失败的回调,隐藏下拉刷新和上拉加载的状态;

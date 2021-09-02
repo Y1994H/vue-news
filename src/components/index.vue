@@ -8,7 +8,7 @@
         <li
           ref="navli"
           class="nav_a"
-          v-for="(item, i) in NewsList"
+          v-for="(item, i) in newsList"
           :data-id="item.list_dir.replace('/', '').replace('/', '')"
           :class="active === item.id ? 'active' : 'active_a'"
           :key="i"
@@ -18,41 +18,49 @@
           <span></span>
         </li>
       </ul> -->
-      <ly-tab 
-        v-model="selectedId" 
-        :options="options" 
-        :items="NewsList"
+      <ly-tab
+        v-model="selectedId"
+        :options="options"
+        :items="newsList"
         @change="handleChange"
-         >
+      >
       </ly-tab>
     </nav>
     <div class="newslist">
-      <mescroll-vue ref="mescroll" :down="mescrollDown" :up="mescrollUp" @init="mescrollInit">
+      <mescroll-vue
+        ref="mescroll"
+        :down="mescrollDown"
+        :up="mescrollUp"
+        @init="mescrollInit"
+      >
+        <div class="noti_hide"></div>
         <div
           class="hot"
           v-for="(item, index) in hotdata"
           :key="item.id + index"
           v-show="visible"
         >
-          <router-link :to="'/article/' + item.id + '?from='+from">
-            <span>头条</span>
-            {{ item.title }}
+          <router-link :to="'/article/' + item.id + '?from=' + from">
+            <h3>
+              <span class="item-status" :style="scaleFun">置顶</span>
+              {{ item.title }}
+            </h3>
           </router-link>
         </div>
         <ul>
           <li
             class="news_li"
             v-for="(item, index) in onedata"
-            :key="(index+index_a)"
+            :key="index + index_a"
           >
             <template v-if="item.id > 0">
               <router-link
                 class="news_san"
-                :to="'/article/' + item.id + '?from='+from" 
+                :to="'/article/' + item.id + '?from=' + from"
                 v-if="item.all_img.length == 3"
               >
                 <div class="news_right">
-                  <div class="news_tit">{{ item.title }}</div>
+                  <h3 class="news_tit">{{ item.title }}</h3>
                 </div>
                 <div class="news_img">
                   <img v-lazy="item.all_img[0] + ximg" alt="" />
@@ -60,23 +68,27 @@
                   <img v-lazy="item.all_img[2] + ximg" alt="" />
                 </div>
                 <div class="news_sy">
-                  <span class="ex_tes">{{ item.source }}</span>
-                  <span class="ex_tes ex_t">{{ rand }}万阅读</span>
+                  <span class="ex_tes" v-time="item.timestamp">{{
+                    item.source
+                  }}</span>
+                  <!-- <span class="ex_tes ex_t">{{ rand }}万阅读</span> -->
                 </div>
               </router-link>
               <router-link
                 class="news_dan"
-                :to="'/article/' + item.id + '?from='+from" 
+                :to="'/article/' + item.id + '?from=' + from"
                 v-if="item.all_img.length == 0"
               >
                 <div class="news_left">
                   <img v-lazy="item.litpic[0] + ximg" alt="" />
                 </div>
                 <div class="news_right">
-                  <div class="news_tit">{{ item.title }}</div>
+                  <h3 class="news_tit">{{ item.title }}</h3>
                   <div class="news_ly">
-                    <span class="ex_tes">{{ item.source }}</span>
-                    <span class="ex_tes ex_t">{{ rand }}万阅读</span>
+                    <span class="ex_tes" v-time="item.timestamp">{{
+                      item.source
+                    }}</span>
+                    <!-- <span class="ex_tes ex_t">{{ rand }}万阅读</span> -->
                   </div>
                 </div>
               </router-link>
@@ -88,11 +100,15 @@
             </template>
           </li>
           <!-- 下拉信息流 -->
-          <li class="news_li" v-for="(item, index) in dataList" :key="item.id + (index + index_a)">
+          <li
+            class="news_li"
+            v-for="(item, index) in dataList"
+            :key="item.id + (index + index_a)"
+          >
             <template v-if="item.id > 0">
               <router-link
                 class="news_san"
-                :to="'/article/' + item.id + '?from='+from" 
+                :to="'/article/' + item.id + '?from=' + from"
                 v-if="item.all_img.length == 3"
               >
                 <div class="news_right">
@@ -104,13 +120,15 @@
                   <img v-lazy="item.all_img[2] + ximg" alt="" />
                 </div>
                 <div class="news_sy">
-                  <span class="ex_tes">{{ item.source }}</span>
-                  <span class="ex_tes ex_t">{{ rand }}万阅读</span>
+                  <span class="ex_tes" v-time="item.timestamp">{{
+                    item.source
+                  }}</span>
+                  <!-- <span class="ex_tes ex_t">{{ rand }}万阅读</span> -->
                 </div>
               </router-link>
               <router-link
                 class="news_dan"
-                :to="'/article/' + item.id + '?from='+from" 
+                :to="'/article/' + item.id + '?from=' + from"
                 v-if="item.all_img.length == 0"
               >
                 <div class="news_left">
@@ -119,8 +137,10 @@
                 <div class="news_right">
                   <div class="news_tit">{{ item.title }}</div>
                   <div class="news_ly">
-                    <span class="ex_tes">{{ item.source }}</span>
-                    <span class="ex_tes ex_t">{{ rand }}万阅读</span>
+                    <span class="ex_tes" v-time="item.timestamp">{{
+                      item.source
+                    }}</span>
+                    <!-- <span class="ex_tes ex_t">{{ rand }}万阅读</span> -->
                   </div>
                 </div>
               </router-link>
@@ -135,15 +155,15 @@
       </mescroll-vue>
     </div>
     <div class="refresh-fixed" @click="Refresh"></div>
-    <div class="noti_hide"></div>
   </div>
 </template>
 
 <script>
-import logoSrc from "@/image/ss.svg";
 import { baiduJs } from "@/js/index.js";
+import "@/js/time.js";
 export default {
   components: {
+    //动态插入js
     "remote-js": {
       render(createElement) {
         return createElement("script", {
@@ -157,62 +177,59 @@ export default {
   },
   data() {
     return {
+      scale: 0.833,
       selectedId: 0,
       options: {
-        activeColor: '#f85959',
-        labelKey: 'name' // 在sortList数组中选择想要渲染的key名
+        activeColor: "#f85959",
+        labelKey: "name", // 在sortList数组中选择想要渲染的key名
       },
-      navurl:'//mini.yyrtv.com/api/get_mobile_menu',//导航接口
-      hoturl:'//mini.yyrtv.com/api/get_mobile_hot',//热点接口
-      newsurl:'//mini.yyrtv.com/mapi/new_ajaxlist?cid=',//信息流接口
+      navurl: "//mini.yyrtv.com/api/get_mobile_menu", //导航接口
+      hoturl: "//mini.yyrtv.com/api/get_mobile_hot", //热点接口
+      newsurl: "//mini.yyrtv.com/mapi/new_ajaxlist?cid=", //信息流接口
       //百度id
-      baidu_id:null,
-      baidu_box:[],
-      //百度信息流
+      baidu_id: null,
+      baidu_box: [],
+      //百度信息流广告
       baidu: [
-        '7644731', //6t1
-        '7644733', //6t2
-        '7644808', //dt2 n
-        '7644809', //6t3
-        
-        '7644731', //6t1
-        '7644733', //6t2
-        '7644808', //dt2 n
-        '7644809', //6t3
-        
-        '7644731', //6t1
-        '7644733', //6t2
-        '7644808', //dt2 n
-        '7644809', //6t3
+        "7644731", //6t1
+        "7644733", //6t2
+        "7644808", //dt2 n
+        "7644809", //6t3
+
+        "7644731", //6t1
+        "7644733", //6t2
+        "7644808", //dt2 n
+        "7644809", //6t3
+
+        "7644731", //6t1
+        "7644733", //6t2
+        "7644808", //dt2 n
+        "7644809", //6t3
       ],
-      index_a:0,
-      ximg: "?x-oss-process=style/mxiaotu2",
-      imgUrl: logoSrc,
-      first_cid: null, //id
+      index_a: 0,
+      ximg: "?x-oss-process=style/mxiaotu2", //图片后缀
+      // first_cid: null, //id
       page: 1, //页码数
       size: 20, //请求数量
-      active: this.$route.query.active || 'tuijian',
+      active: this.$route.query.active || "tuijian",
       visible: true,
-      notihide:false,
       rand: null,
-      from:null,//渠道
-      NewsList: [], //导航数据
+      from: null, //渠道
+      newsList: [], //导航数据
       errored: false,
       onedata: [], //第一次加载数据
       hotdata: null, //热点数据
       hotpage: 1,
       mescroll: null, // mescroll实例对象
-      mescrollDown:{
+      mescrollDown: {
         callback: this.downCallback,
         auto: false,
         use: true,
         isLock: false,
         offset: 80,
         empty: {
-            tip: "暂无相关数据~"
+          tip: "暂无相关数据~",
         },
-        htmlNodata: '<p class="upwarp-nodata">-- END --</p>',
-        noMoreSize: 5,
       },
       mescrollUp: {
         use: true,
@@ -220,21 +237,19 @@ export default {
         callback: this.upCallback, // 上拉回调,此处简写; 相当于 callback: function(page, mescroll) { }//以下是一些常用的配置,当然不写也可以的.
         htmlNodata: '<p class="upwarp-nodata">-- 暂无数据 --</p>',
         noMoreSize: 5,
-        // page: {
-        //   num: this.page, //当前页 默认0,回调之前会加1; 即callback(page)会从1开始
-        //   size: this.size, //每页数据条数,默认10
-        // },
-        // toTop: {
-        //   //回到顶部按钮
-        //   src: logoSrc, //图片路径,默认null,支持网络图
-        //   offset: 1000, //列表滚动1000px才显示回到顶部按钮
-        // },
+        offset: 250,
       },
       dataList: [], // 列表数据
     };
   },
+  computed: {
+    scaleFun: function () {
+      var scale = this.scale;
+      return `transform:scale(${scale})`;
+    },
+  },
   watch: {
-    active (newValue) {
+    active(newValue) {
       let query = this.$router.history.current.query;
       let path = this.$router.history.current.path;
       //对象的拷贝
@@ -242,14 +257,14 @@ export default {
       // 地址栏的参数值赋值
       newQuery.active = newValue;
       this.$router.push({ path, query: newQuery });
-    }
+    },
   },
   created() {
     //导航
     let _this = this;
-     _this.getNav();
-     _this.hot(); 
-    _this.from = _this.getQueryString('from');
+    _this.getNav();
+    _this.hot();
+    _this.from = _this.getQueryString("from");
   },
   mounted() {
     let _this = this;
@@ -265,51 +280,51 @@ export default {
     },
     //导航
     getNav() {
+      document.title = "益资讯";
       let _this = this;
       _this.$axios
         .get(_this.navurl)
         .then((response) => {
           //导航数据
-          _this.NewsList = response.data.data; 
-            let id1 = _this.NewsList.findIndex(item => {
-              if(item.name == '社会'){
-                return true;
-              }
-            })
-            _this.NewsList.splice(id1, 1)
-            let id2 = _this.NewsList.findIndex(item => {
-              if(item.name == '国际'){
-                return true;
-              }
-            })
-            _this.NewsList.splice(id2, 1)
-            let id3 = _this.NewsList.findIndex(item => {
-              if(item.name == '历史'){
-                return true;
-              }
-            })
-            _this.NewsList.splice(id3, 1)
-          _this.NewsList.forEach((i,k)=>{
+          _this.newsList = response.data.data;
+          let id1 = _this.newsList.findIndex((item) => {
+            if (item.name == "社会") {
+              return true;
+            }
+          });
+          _this.newsList.splice(id1, 1);
+          let id2 = _this.newsList.findIndex((item) => {
+            if (item.name == "国际") {
+              return true;
+            }
+          });
+          _this.newsList.splice(id2, 1);
+          let id3 = _this.newsList.findIndex((item) => {
+            if (item.name == "历史") {
+              return true;
+            }
+          });
+          _this.newsList.splice(id3, 1);
+          _this.newsList.forEach((i, k) => {
             //判断数据里面的值是否与URL中的active值一样
             let list_dir = i.list_dir.replace("/", "").replace("/", "");
-            if( list_dir == _this.active) {
-                //导航高亮
-                _this.selectedId = k;
-                // _this.first_cid = list_dir;
-                if(_this.active === 'tuijian'){
-                    _this.Newsdata(_this.active);
-                    _this.hot();
-                }
+            if (list_dir == _this.active) {
+              //导航高亮
+              _this.selectedId = k;
+              // _this.first_cid = list_dir;
+              if (_this.active === "tuijian") {
+                _this.Newsdata(_this.active);
+                _this.hot();
+              }
             }
-        })
-  
+          });
         })
         .catch((error) => {
           console.log(error);
           _this.errored = true;
         });
     },
-    
+
     //热点
     hot() {
       let _this = this;
@@ -317,7 +332,7 @@ export default {
         .get(_this.hoturl, {
           params: {
             page: _this.hotpage,
-            size: 1,
+            size: 5,
           },
         })
         .then((response) => {
@@ -330,15 +345,15 @@ export default {
     },
     //首次新闻列表加载
     Newsdata(nav_cid) {
-        let _this = this;
-        let url = _this.newsurl + nav_cid;
-        _this.onedata = [];
-        if(nav_cid == 'tuijian'){
-          _this.visible = true;
-        }else{
-          _this.visible = false;
-        }; 
-        
+      let _this = this;
+      let url = _this.newsurl + nav_cid;
+      _this.onedata = [];
+      if (nav_cid == "tuijian") {
+        _this.visible = true;
+      } else {
+        _this.visible = false;
+      }
+
       _this.$axios
         .get(url, {
           params: {
@@ -348,18 +363,21 @@ export default {
         })
         .then((response) => {
           let res = response.data.data;
-          let advert = _this.getRandomArrayElements(_this.baidu, res.length / 2);
+          let advert = _this.getRandomArrayElements(
+            _this.baidu,
+            res.length / 2
+          );
           advert.forEach((a, b) => {
             _this.baidu_id = _this.guid();
-            _this.baidu_box.push(_this.baidu_id)
+            _this.baidu_box.push(_this.baidu_id);
             res.splice((b + 1) * 2 + b, 0, {
               id: 0,
               url: a,
-              baidu_id:_this.baidu_id
+              baidu_id: _this.baidu_id,
             });
           });
           //传值百度广告id和百度盒子id
-          // baiduJs(_this.baidu,_this.baidu_box)
+          baiduJs(_this.baidu, _this.baidu_box);
           _this.onedata = res;
           _this.mescrollDown.use = true;
         })
@@ -367,12 +385,11 @@ export default {
           console.log(error);
           _this.errored = true;
         });
-
     },
     //点击导航
-    handleChange(item,index){
+    handleChange(item, index) {
       let _this = this;
-      let cid = item.list_dir.replace("/", "").replace("/", "");;
+      let cid = item.list_dir.replace("/", "").replace("/", "");
       let url = _this.newsurl + cid;
       _this.page = 1;
       _this.active = cid;
@@ -397,16 +414,19 @@ export default {
         })
         .then((response) => {
           let res = response.data.data;
-          let advert = _this.getRandomArrayElements(_this.baidu, res.length / 2);
+          let advert = _this.getRandomArrayElements(
+            _this.baidu,
+            res.length / 2
+          );
           advert.forEach((a, b) => {
             _this.baidu_id = _this.guid();
             res.splice((b + 1) * 2 + b, 0, {
               id: 0,
               url: a,
-              baidu_id:_this.baidu_id
+              baidu_id: _this.baidu_id,
             });
           });
-          // baiduJs(_this.baidu,_this.baidu_box)
+          baiduJs(_this.baidu, _this.baidu_box);
           _this.onedata = res;
           _this.mescrollDown.use = true;
         })
@@ -414,54 +434,50 @@ export default {
           console.log(error);
           _this.errored = true;
         });
-              
     },
     //点击刷新
-    Refresh(){
+    Refresh() {
       let _this = this;
-      $('.mescroll').animate({
-          scrollTop: 0
-      }, 0);
+      $(".mescroll").animate(
+        {
+          scrollTop: 0,
+        },
+        0
+      );
       _this.mescroll.showDownScroll();
-      setTimeout(function(){
+      setTimeout(function () {
         _this.mescroll.triggerDownScroll();
-      },500)
+      }, 500);
     },
     mescrollInit(mescroll) {
       this.mescroll = mescroll; // 如果this.mescroll对象没有使用到,则mescrollInit可以不用配置
     },
     downCallback(mescroll) {
       let _this = this;
-      mescroll.resetUpScroll(); 
+      mescroll.resetUpScroll();
       //  //首屏
       _this.onedata = [];
       // //下拉信息流
       _this.dataList = [];
-      setTimeout(()=>{
+      setTimeout(() => {
         // 隐藏下拉加载状态
         mescroll.endErr();
-        // _this.notihide = true;
-        $('.noti_hide').css({
-          'top':'1.6rem',
-        });
-        setTimeout(()=>{
-          $('.noti_hide').css({
-            'top':'0',
-          });
-        },1000)
-      },1000)
-     
+        $(".noti_hide").show();
+        setTimeout(() => {
+          $(".noti_hide").hide();
+        }, 1000);
+      }, 1000);
     },
     //下拉加载
     upCallback(page, mescroll) {
       let _this = this;
-      let url =  _this.newsurl+ _this.active;
-      _this.page++
-      if(_this.active == null) {
-          _this.index_a = 'rem'
-        }else{
-          _this.index_a = _this.active;
-        }
+      let url = _this.newsurl + _this.active;
+      _this.page++;
+      if (_this.active == null) {
+        _this.index_a = "rem";
+      } else {
+        _this.index_a = _this.active;
+      }
       if (_this.active == "tuijian") {
         _this.visible = true;
       } else {
@@ -479,7 +495,7 @@ export default {
           // 请求的列表数据
           let arr = response.data.data;
           console.log();
-          if(arr != 0){
+          if (arr != 0) {
             let advert = _this.getRandomArrayElements(
               _this.baidu,
               arr.length / 2
@@ -497,14 +513,13 @@ export default {
             _this.$nextTick(() => {
               mescroll.endSuccess(arr.length);
               _this.mescrollDown.use = true;
-              $('.noti_hide').html('为您推荐'+arr.length+'条更新')
+              $(".noti_hide").html("为您推荐" + arr.length + "条更新");
             });
-          }else{
-              mescroll.endSuccess(arr.length);
-              _this.mescrollDown.use = false;
-              $('.noti_hide').html('暂无数据~')
+          } else {
+            mescroll.endSuccess(arr.length);
+            _this.mescrollDown.use = false;
+            $(".noti_hide").html("暂无数据~");
           }
-          
         })
         .catch((e) => {
           // 联网失败的回调,隐藏下拉刷新和上拉加载的状态;
@@ -518,15 +533,15 @@ export default {
       var reg_rewrite = new RegExp("(^|/)" + name + "/([^/]*)(/|$)", "i");
       var r = window.location.search.substr(1).match(reg);
       var q = window.location.pathname.substr(1).match(reg_rewrite);
-      if(r != null){
+      if (r != null) {
         return unescape(r[2]);
-      }else if(q != null){
+      } else if (q != null) {
         return unescape(q[2]);
-      }else{
+      } else {
         return null;
       }
     },
-     //随机取出几个数组
+    //随机取出几个数组
     getRandomArrayElements(arr, count) {
       let shuffled = arr.slice(0),
         i = arr.length,
@@ -543,8 +558,10 @@ export default {
     },
     //生成唯一ID
     guid() {
-        return Number(Math.random().toString().substr(3, 3) + Date.now()).toString(36);
-    }
+      return Number(
+        Math.random().toString().substr(3, 3) + Date.now()
+      ).toString(36);
+    },
   },
 };
 </script>
@@ -566,7 +583,7 @@ nav {
   top: 0;
   z-index: 5;
   width: 100%;
-   height: 36px;
+  height: 36px;
   background: #f4f5f6;
 }
 header {
@@ -577,11 +594,11 @@ header {
   position: relative;
 }
 header a {
-    display: inline-block;
-    background: url(https://p4.ssl.img.360kuai.com/t01ccd7f57276ef0a47.png) center no-repeat;
-    text-indent: -9999px;
-    background-size: 83px;
-    width: 83px;
+  display: inline-block;
+  background: url(../image/img_preview.png) center no-repeat;
+  text-indent: -9999px;
+  background-size: 83px;
+  width: 83px;
 }
 nav ul {
   width: 100%;
@@ -615,39 +632,51 @@ nav ul li {
   width: 100%;
   height: auto;
   overflow: hidden;
-  margin-top: 0.8rem;
+  margin-top: 1.7rem;
 }
 .hot {
-  width: 95%;
-  height: auto;
-  overflow: hidden;
-  margin: 5px auto;
+  margin: 0 15px;
+  font-size: 0;
+  padding: 12px 0 10px;
+  position: relative;
 }
-.hot span {
-  font-size: 0.32rem;
-  color: #fff;
-  vertical-align: middle;
-  text-align: center;
-  display: inline-block;
-  background-color: #f85959;
-  padding: 5px 5px;
-  border-radius: 5px;
-  margin-bottom: 5px;
-  margin-right: 7px;
-}
-.hot a {
-  color: #f85959;
+.hot h3 {
+  margin: 0;
+  font-size: 17px;
+  -webkit-line-clamp: 3;
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
-  position: relative;
-  word-wrap: break-word;
-  margin-top: 0.1rem;
-  line-height: 0.5rem;
   font-weight: 400;
-  font-size: 0.4rem;
+}
+.item-status {
+  display: inline-block;
+  border: 1px solid #ff7070;
+  color: #ff7070;
+  border-radius: 4px;
+  padding: 0 4px;
+  font-size: 12px;
+  margin-right: 7px;
+}
+.hot a {
+  display: block;
+  -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+  color: #2c2c2c;
+  text-decoration: none;
+  padding: 0 !important;
+}
+.hot:after {
+  content: " ";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  display: block;
+  width: 100%;
+  height: 1px;
+  background: #e8e8e8;
+  /* -webkit-transform: scale(.5);
+    -webkit-transform-origin: 0; */
 }
 .newslist ul {
   width: 100%;
@@ -663,7 +692,7 @@ nav ul li {
   padding-bottom: 0.2rem;
   border-bottom: 1px solid #ddd;
 }
-/* .baidu {
+.baidu {
   width: 7.1rem;
   height: auto;
   overflow: hidden;
@@ -671,29 +700,49 @@ nav ul li {
   padding-top: 0.2rem;
   padding-bottom: 0.2rem;
   border-bottom: 1px solid #ddd;
-} */
+}
 .newslist ul .news_left {
-  float: left;
-  width: 2.34rem;
-  height: 1.56rem;
+  overflow: hidden;
+  float: right;
+  /* width: 2.34rem;
+  height: 1.56rem; */
+  width: 33%;
+  display: inline-block;
+  vertical-align: middle;
+  height: 70px;
 }
 .newslist ul .news_left img {
-  width: 2.34rem;
-  height: 1.56rem;
+  /* width: 2.34rem;
+  height: 1.56rem; */
+  width: 100%;
+  min-height: 78px;
+  background-color: #fafafa;
 }
 .newslist ul .news_right {
-  float: right;
-  width: 4.48rem;
+  float: left;
+  width: 67%;
+  vertical-align: top;
   height: 1.56rem;
 }
+.news_dan .news_tit {
+  margin-right: 22px;
+}
 .news_right .news_tit {
-  font-size: 0.32rem;
+  font-size: 17px;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  font-weight: 400;
+  text-align: justify;
+  /* font-size: 0.34rem;
   display: -webkit-box;
   overflow: hidden;
   width: 100%;
   text-overflow: ellipsis;
   -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  -webkit-box-orient: vertical; */
 }
 .news_ly {
   text-align: right;
@@ -713,8 +762,10 @@ nav ul li {
   justify-content: space-between;
 }
 .news_img img {
-  width: 2.34rem;
-  height: 1.56rem;
+  /* width: 2.34rem;
+  height: 1.56rem; */
+  width: 32.7%;
+  height: 70px;
 }
 .news_san,
 .news_dan {
@@ -743,43 +794,58 @@ nav ul li {
   background-color: hsla(0, 0%, 100%, 0.9);
 }
 .refresh-fixed {
-    position: fixed;
-    bottom: 20px;
-    right: 15px;
-    width: 55px;
-    height: 55px;
-    background: url(../image/shuaxin.png) no-repeat;
-    background-size: cover;
+  position: fixed;
+  bottom: 20px;
+  right: 15px;
+  width: 55px;
+  height: 55px;
+  background: url(../image/shuaxin.png) no-repeat;
+  background-size: cover;
 }
-.noti_hide{
-    background: #d6e9f7;
-    color: #2a90d7;
-    position: fixed;
+.noti_hide {
+  background: #d6e9f7;
+  color: #2a90d7;
+  width: 100%;
+  height: 0.6rem;
+  line-height: 4.8px;
+  line-height: 0.6rem;
+  text-align: center;
+  font-size: 1.92px;
+  font-size: 0.12rem;
+  -webkit-animation: pulse 0.3s;
+  animation: pulse 0.3s;
+  display: none;
+}
+@keyframes pulse {
+  0% {
+    top: -0.21rem;
+    transform: scaleX(1);
+  }
+
+  50% {
     top: 0;
-    left: 0;
-    width: 100%;
-    height: .6rem;
-    line-height: 4.8px;
-    line-height: .6rem;
-    text-align: center;
-    font-size: 1.92px;
-    font-size: .12rem;
-    -webkit-animation: top .3s;
-    animation: top .3s;
+    transform: scale3d(1.05, 1.05, 1.05);
+  }
+
+  to {
+    top: 0;
+    transform: scaleX(1);
+  }
 }
-.ly-tab{
+
+.ly-tab {
   position: relative;
   background-color: #f5f5f5;
 }
 .ly-tab:before {
-    content: ' ';
-    position: absolute;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABsCAQAAAA/U3/IAAAAjUlEQVR42u3ROw6AIABEQUDwc/+z2muIGiil08zbCFpODEGSJEnSYHHPoZybw1K31m3nd3mWmzs3m+pzLzV3ut5Sd/aL3Rm780Xp638AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAODPAEmSJEnDHdhJApBByRhCAAAAAElFTkSuQmCC);
-    background-size: 100%;
-    width: 30px;
-    z-index: 1;
+  content: " ";
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABsCAQAAAA/U3/IAAAAjUlEQVR42u3ROw6AIABEQUDwc/+z2muIGiil08zbCFpODEGSJEnSYHHPoZybw1K31m3nd3mWmzs3m+pzLzV3ut5Sd/aL3Rm780Xp638AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAODPAEmSJEnDHdhJApBByRhCAAAAAElFTkSuQmCC);
+  background-size: 100%;
+  width: 30px;
+  z-index: 1;
 }
 </style>

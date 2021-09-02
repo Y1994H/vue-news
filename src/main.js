@@ -11,7 +11,7 @@ import VueLazyload from 'vue-lazyload';
 import 'normalize.css/normalize.css';
 Vue.use(LyTab);
 Vue.use(VueLazyload, {
-  preLoad: 1,
+  preLoad: 1.3,
   error: require('./image/img_preview.png'),
   loading: require('./image/img_preview.png'), // 为图片加载前展示的默认图片路径
   attempt: 3,
@@ -28,4 +28,3 @@ new Vue({
   components: { App },
   template: '<App/>'
 })
-

@@ -1,5 +1,5 @@
 <template>
-  <!-- <mescroll-vue ref="mescroll" :down="getMescrollDown()" :up="mescrollUp"> -->
+  <mescroll-vue ref="mescroll" :down="getMescrollDown()" :up="mescrollUp"> 
   <div>
       <header>
       <a href="http://">快资讯</a>
@@ -28,13 +28,13 @@
           :style="{ fontSize: postFontSize / 100 + 'rem' }"
         ></div>
       </div>
-      <!-- <div class="tuijai">
+      <div class="tuijai">
         <div class="wn_tj">为你推荐</div>
         <div class="hong"></div>
         <div class="hui"></div>
-      </div> -->
+      </div>
       <div class="newslist">
-        <!-- <ul>
+        <ul>
           <li
             class="news_li"
             v-for="(item, index) in onedata"
@@ -71,7 +71,7 @@
             </router-link>
           </li> -->
           <!-- 下拉信息流 -->
-          <!-- <li v-for="(item, index) in dataList" :key="index + index_a">
+          <li v-for="(item, index) in dataList" :key="index + index_a">
             <router-link
               class="news_san"
               :to="'/article/' + item.id + '?from=' + from"
@@ -100,11 +100,11 @@
               </div>
             </router-link>
           </li> 
-        </ul>-->
+        </ul>
       </div>
     </div>
   </div>
-  <!-- </mescroll-vue> -->
+</mescroll-vue> 
 </template>
 <script>
 import logoSrc from "@/image/ss.svg";
@@ -148,6 +148,7 @@ export default {
       .then((response) => {
         // console.log(response.data.data.content[0]);
         (_this.article_txt = response.data.data),
+         document.title = _this.article_txt.title;
           //文章内容
           (_this.article_content = response.data.data.content[0]),
           //导航

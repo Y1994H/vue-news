@@ -63,7 +63,7 @@ async function baiduJs(baidu,baidu_box) {
 
 }
 export { 
-    //很关键
-    indexJs,
+    //调用方法
+    // indexJs,
     baiduJs
 }

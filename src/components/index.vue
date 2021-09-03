@@ -264,6 +264,7 @@ export default {
     let _this = this;
     _this.getNav();
     _this.hot();
+    -this.btn();
     _this.from = _this.getQueryString("from");
   },
   mounted() {
@@ -435,6 +436,20 @@ export default {
           _this.errored = true;
         });
     },
+    //导航二次点击
+    btn(){
+      let _this = this;
+      $("body").on("click", '.ly-tab-list a', function () {
+            if($(this).attr('class').indexOf('atcive-ly') == -1){
+              $(this).addClass('atcive-ly').siblings().removeClass('atcive-ly');
+            }else{
+              _this.mescroll.showDownScroll();
+            setTimeout(function () {
+              _this.mescroll.triggerDownScroll();
+            }, 500);
+          }
+      });
+    },
     //点击刷新
     Refresh() {
       let _this = this;
@@ -449,6 +464,7 @@ export default {
         _this.mescroll.triggerDownScroll();
       }, 500);
     },
+  
     mescrollInit(mescroll) {
       this.mescroll = mescroll; // 如果this.mescroll对象没有使用到,则mescrollInit可以不用配置
     },

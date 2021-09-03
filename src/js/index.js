@@ -1,34 +1,11 @@
-async function indexJs(first_cid) {
-    setTimeout(function(){
-        let oli = $('.nav-list li');
-        for (var i = 0; i < oli.length; i++) {
-            var li_id = $(oli[i]).attr('data-id').replace("/", "").replace("/", "");
-            if (first_cid == li_id) {
-                let moveX = $(oli[i]).position().left + $(oli[i]).parent().scrollLeft();
-                let pageX = document.documentElement.clientWidth;
-                let blockWidth = $(oli[i]).width();
-                let left = moveX - (pageX / 2) + (blockWidth / 2);
-                $(".nav-list").animate({
-                    scrollLeft: left,
-                });
-                let cate_index = $(oli[i]).prevAll().length;
-                let pxs = parseInt(cate_index) * 52;
-                $('.bar').css({"width": "52px", "transition-duration": "100ms", "transform": "translateX(" + pxs + "px)"})
-            }
-        }
-    },100)
+async function indexJs(mescroll) {
     //点击导航滑动
-    $("body").on("click", '.nav_a', function () {
-        let moveX = $(this).position().left + $(this).parent().scrollLeft();
-        let pageX = document.documentElement.clientWidth;
-        let blockWidth = $(this).width();
-        let left = moveX - (pageX / 2) + (blockWidth / 2);
-        $(".nav-list").animate({
-            scrollLeft: left,
-        });
-        let cate_index = $(this).prevAll().length;
-        let pxs = parseInt(cate_index) * 52;
-        $('.bar').css({"width": "52px", "transition-duration": "100ms", "transform": "translateX(" + pxs + "px)"})
+    $("body").on("click", '.ly-tab-item', function () {
+        if($(this).attr('class').indexOf('atcive-ly') == -1){
+            $(this).addClass('atcive-ly') 
+        }else{
+            console.log(mescroll);
+        }
     });
 }
 //百度广告

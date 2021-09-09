@@ -28,10 +28,16 @@
           :style="{ fontSize: postFontSize / 100 + 'rem' }"
         ></div>
       </div>
-      <div class="tuijai">
+      <!-- <div class="tuijai">
         <div class="wn_tj">为你推荐</div>
         <div class="hong"></div>
         <div class="hui"></div>
+      </div> -->
+      <div class="rel_news">
+        <div class="block-title">
+            <h2>— 精彩推荐 —</h2>
+            <p>以下内容由益资讯提供</p>
+        </div>
       </div>
       <div class="newslist">
         <ul>
@@ -54,6 +60,12 @@
                 <img :src="item.all_img[1]" alt="" />
                 <img :src="item.all_img[2]" alt="" />
               </div>
+              <div class="news_sy">
+                  <span class="ex_tes">{{
+                    item.source
+                  }}</span>
+                  <!-- <span class="ex_tes ex_t">{{ rand }}万阅读</span> -->
+              </div>
             </router-link>
             <router-link
               class="news_dan"
@@ -69,9 +81,9 @@
                 <div class="news_ly">{{ item.source }}</div>
               </div>
             </router-link>
-          </li> -->
+          </li>
           <!-- 下拉信息流 -->
-          <li v-for="(item, index) in dataList" :key="index + index_a">
+          <li v-for="(item, index) in dataList" :key="index + index_a" @click.native="fluchCom">
             <router-link
               class="news_san"
               :to="'/article/' + item.id + '?from=' + from"
@@ -85,11 +97,18 @@
                 <img :src="item.all_img[1]" alt="" />
                 <img :src="item.all_img[2]" alt="" />
               </div>
+              <div class="news_sy">
+                  <span class="ex_tes">{{
+                    item.source
+                  }}</span>
+                  <!-- <span class="ex_tes ex_t">{{ rand }}万阅读</span> -->
+              </div>
             </router-link>
             <router-link
               class="news_dan"
               :to="'/article/' + item.id + '?from=' + from"
               v-if="item.all_img.length == 0"
+              @click.native="fluchCom"
             >
               <div class="news_left">
                 <img :src="item.litpic[0]" alt="" />
@@ -122,18 +141,18 @@ export default {
       onedata: [], //第一次加载数据
       mescroll: null, // mescroll实例对象
       mescrollUp: {
-        use: true,
+        use: false,
         auto: false, // 上拉加载的配置.
         callback: this.upCallback, // 上拉回调,此处简写; 相当于 callback: function(page, mescroll) { }//以下是一些常用的配置,当然不写也可以的.
         page: {
           num: 1, //当前页 默认0,回调之前会加1; 即callback(page)会从1开始
           size: 20, //每页数据条数,默认10
         },
-        toTop: {
-          //回到顶部按钮
-          src: logoSrc, //图片路径,默认null,支持网络图
-          offset: 1000, //列表滚动1000px才显示回到顶部按钮
-        },
+        // toTop: {
+        //   //回到顶部按钮
+        //   src: logoSrc, //图片路径,默认null,支持网络图
+        //   offset: 1000, //列表滚动1000px才显示回到顶部按钮
+        // },
       },
       dataList: [], // 列表数据
     };
@@ -307,6 +326,9 @@ export default {
   letter-spacing: 0.5px;
   text-align: justify;
 }
+.content_html img{
+  margin: .1rem auto;
+}
 .tuijai {
   width: 100%;
   height: auto;
@@ -331,89 +353,6 @@ export default {
   height: 1px;
   margin-top: 0.1rem;
   float: left;
-}
-
-.newslist {
-  width: 100%;
-  height: auto;
-  overflow: hidden;
-}
-
-.newslist ul {
-  width: 100%;
-  height: auto;
-  overflow: hidden;
-}
-
-.newslist ul li {
-  width: 7.1rem;
-  height: auto;
-  overflow: hidden;
-  margin: 0 auto;
-  padding-top: 0.2rem;
-  padding-bottom: 0.2rem;
-  border-bottom: 1px solid #ddd;
-}
-
-.newslist ul .news_left {
-  float: left;
-  width: 2.34rem;
-  height: 1.56rem;
-}
-
-.newslist ul .news_left img {
-  width: 2.34rem;
-  height: 1.56rem;
-}
-
-.newslist ul .news_right {
-  float: right;
-  width: 4.48rem;
-  height: 1.56rem;
-}
-
-.news_right .news_tit {
-  font-size: 0.32rem;
-  display: -webkit-box;
-  overflow: hidden;
-  width: 100%;
-  text-overflow: ellipsis;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-}
-
-.news_ly {
-  text-align: right;
-  font-size: 0.28rem;
-  color: #949494;
-  margin-top: 0.2rem;
-}
-
-.news_img img {
-  width: 2.34rem;
-  height: 1.56rem;
-}
-
-.news_san,
-.news_dan {
-  display: block;
-  width: 100%;
-  height: auto;
-  overflow: hidden;
-}
-
-.news_san .news_right {
-  width: 100% !important;
-  height: auto !important;
-}
-
-.news_san .news_img {
-  width: 100% !important;
-  height: auto;
-  float: left;
-  display: flex;
-  justify-content: space-between;
-  margin-top: 0.15rem;
 }
 
 .link_a {
@@ -457,9 +396,38 @@ header {
 }
 header a {
     display: inline-block;
-    background: url(https://p4.ssl.img.360kuai.com/t01ccd7f57276ef0a47.png) center no-repeat;
+    background: url(../image/img_preview.png) center no-repeat;
     text-indent: -9999px;
     background-size: 83px;
     width: 83px;
+}
+.rel_news {
+    width: 100%;
+    height: auto;
+    overflow: hidden;
+}
+
+.block-title {
+    text-align: center;
+}
+
+.block-title h2 {
+    color: #888;
+    font-size: 2.24px;
+    font-size: .14rem;
+    line-height: 2.88px;
+    line-height: .18rem;
+    border-bottom: none;
+    margin-top: 26px;
+    margin-bottom: 9px;
+    font-weight: 400;
+}
+
+.block-title p {
+    width: 100%;
+    height: auto;
+    font-size: 12px;
+    text-align: center;
+    color: #bbb;
 }
 </style>

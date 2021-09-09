@@ -10,6 +10,17 @@ async function indexJs(mescroll) {
 }
 //百度广告
 async function baiduJs(baidu,baidu_box) {
+    $('.mescroll').scroll(function(){
+        if($(".mescroll").scrollTop()>0){
+            $('.refresh-fixed').css({
+                'opacity':'.6'
+            })
+        }else{
+            $('.refresh-fixed').css({
+                'opacity':'1'
+            })
+        }
+      })
     $.each(baidu_box, function (i, val) {
         var ad_string = fgl_str(i);
         // var new_element = document.createElement("script");

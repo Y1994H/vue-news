@@ -215,7 +215,76 @@ export default {
       visible: true,
       rand: null,
       from: null, //渠道
-      newsList: [], //导航数据
+      newsList: [
+        {
+            name: '首页',
+            list_dir: 'tuijian'
+        },
+        {
+            name: '图片',
+            list_dir: 'photo'
+        },
+        {
+            name: '娱乐',
+            list_dir: 'bagua'
+        },
+        {
+            name: '军事',
+            list_dir: 'mil'
+        },
+        {
+            name: '财经',
+            list_dir: 'cj'
+        },
+        {
+            name: '科技',
+            list_dir: 'keji'
+        },
+        {
+            name: '房产',
+            list_dir: 'fangchan'
+        },
+        {
+            name: '汽车',
+            list_dir: 'qiche'
+        },
+        {
+            name: '体育',
+            list_dir: 'tiyu'
+        },
+        {
+            name: '时尚',
+            list_dir: 'shishang'
+        },
+        {
+            name: '健康',
+            list_dir: 'yangsheng'
+        },
+        {
+            name: '游戏',
+            list_dir: 'youxi'
+        },
+        {
+            name: '动漫',
+            list_dir: 'dongman'
+        },
+        {
+            name: '教育',
+            list_dir: 'jiaoyu'
+        },
+        {
+            name: '文化',
+            list_dir: 'wenhua'
+        },
+        {
+            name: '旅游',
+            list_dir: 'lvyou'
+        },
+        {
+            name: '辟谣',
+            list_dir: 'piyao'
+        },
+      ], //导航数据
       errored: false,
       onedata: [], //第一次加载数据
       hotdata: null, //热点数据
@@ -263,8 +332,7 @@ export default {
     //导航
     let _this = this;
     _this.getNav();
-    _this.hot();
-    -this.btn();
+    _this.btn();
     _this.from = _this.getQueryString("from");
   },
   mounted() {
@@ -287,35 +355,36 @@ export default {
         .get(_this.navurl)
         .then((response) => {
           //导航数据
-          _this.newsList = response.data.data;
-          let id1 = _this.newsList.findIndex((item) => {
-            if (item.name == "社会") {
-              return true;
-            }
-          });
-          _this.newsList.splice(id1, 1);
-          let id2 = _this.newsList.findIndex((item) => {
-            if (item.name == "国际") {
-              return true;
-            }
-          });
-          _this.newsList.splice(id2, 1);
-          let id3 = _this.newsList.findIndex((item) => {
-            if (item.name == "历史") {
-              return true;
-            }
-          });
-          _this.newsList.splice(id3, 1);
+          // _this.newsList = response.data.data;
+          // let id1 = _this.newsList.findIndex((item) => {
+          //   if (item.name == "社会") {
+          //     return true;
+          //   }
+          // });
+          // _this.newsList.splice(id1, 1);
+          // let id2 = _this.newsList.findIndex((item) => {
+          //   if (item.name == "国际") {
+          //     return true;
+          //   }
+          // });
+          // _this.newsList.splice(id2, 1);
+          // let id3 = _this.newsList.findIndex((item) => {
+          //   if (item.name == "历史") {
+          //     return true;
+          //   }
+          // });
+          // _this.newsList.splice(id3, 1);
           _this.newsList.forEach((i, k) => {
             //判断数据里面的值是否与URL中的active值一样
-            let list_dir = i.list_dir.replace("/", "").replace("/", "");
+            let list_dir = i.list_dir;
             if (list_dir == _this.active) {
               //导航高亮
               _this.selectedId = k;
-              // _this.first_cid = list_dir;
-              if (_this.active === "tuijian") {
+              if(_this.active === "tuijian") {
                 _this.Newsdata(_this.active);
                 _this.hot();
+              }else {
+                _this.visible = false;
               }
             }
           });
@@ -329,6 +398,7 @@ export default {
     //热点
     hot() {
       let _this = this;
+      _this.visible = true;
       _this.$axios
         .get(_this.hoturl, {
           params: {
@@ -397,11 +467,11 @@ export default {
       _this.index_a = cid;
       //文章id
       if (cid === "tuijian") {
+        _this.hot();
         _this.visible = true;
       } else {
         _this.visible = false;
       }
-      // _this.first_cid = cid;
       //首屏
       _this.onedata = [];
       //下拉信息流
@@ -453,12 +523,9 @@ export default {
     //点击刷新
     Refresh() {
       let _this = this;
-      $(".mescroll").animate(
-        {
-          scrollTop: 0,
-        },
-        0
-      );
+      $(".mescroll").animate({
+        scrollTop: 0,
+        },0);
       _this.mescroll.showDownScroll();
       setTimeout(function () {
         _this.mescroll.triggerDownScroll();
@@ -478,7 +545,7 @@ export default {
       setTimeout(() => {
         // 隐藏下拉加载状态
         mescroll.endErr();
-        $(".noti_hide").show();
+          $(".noti_hide").show();
         setTimeout(() => {
           $(".noti_hide").hide();
         }, 1000);
@@ -510,7 +577,6 @@ export default {
         .then((response) => {
           // 请求的列表数据
           let arr = response.data.data;
-          console.log();
           if (arr != 0) {
             let advert = _this.getRandomArrayElements(
               _this.baidu,
@@ -694,114 +760,7 @@ nav ul li {
   /* -webkit-transform: scale(.5);
     -webkit-transform-origin: 0; */
 }
-.newslist ul {
-  width: 100%;
-  height: auto;
-  overflow: hidden;
-}
-.newslist ul li a {
-  width: 7.1rem;
-  height: auto;
-  overflow: hidden;
-  margin: 0 auto;
-  padding-top: 0.2rem;
-  padding-bottom: 0.2rem;
-  border-bottom: 1px solid #ddd;
-}
-.baidu {
-  width: 7.1rem;
-  height: auto;
-  overflow: hidden;
-  margin: 0 auto;
-  padding-top: 0.2rem;
-  padding-bottom: 0.2rem;
-  border-bottom: 1px solid #ddd;
-}
-.newslist ul .news_left {
-  overflow: hidden;
-  float: right;
-  /* width: 2.34rem;
-  height: 1.56rem; */
-  width: 33%;
-  display: inline-block;
-  vertical-align: middle;
-  height: 70px;
-}
-.newslist ul .news_left img {
-  /* width: 2.34rem;
-  height: 1.56rem; */
-  width: 100%;
-  min-height: 78px;
-  background-color: #fafafa;
-}
-.newslist ul .news_right {
-  float: left;
-  width: 67%;
-  vertical-align: top;
-  height: 1.56rem;
-}
-.news_dan .news_tit {
-  margin-right: 22px;
-}
-.news_right .news_tit {
-  font-size: 17px;
-  -webkit-line-clamp: 3;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  font-weight: 400;
-  text-align: justify;
-  /* font-size: 0.34rem;
-  display: -webkit-box;
-  overflow: hidden;
-  width: 100%;
-  text-overflow: ellipsis;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical; */
-}
-.news_ly {
-  text-align: right;
-  font-size: 0.28rem;
-  color: #949494;
-  margin-top: 0.2rem;
-  display: flex;
-  justify-content: space-between;
-}
-.news_sy {
-  float: left;
-  width: 100%;
-  font-size: 0.28rem;
-  color: #949494;
-  margin-top: 0.2rem;
-  display: flex;
-  justify-content: space-between;
-}
-.news_img img {
-  /* width: 2.34rem;
-  height: 1.56rem; */
-  width: 32.7%;
-  height: 70px;
-}
-.news_san,
-.news_dan {
-  display: block;
-  width: 100%;
-  height: auto;
-  overflow: hidden;
-}
-.news_san .news_right {
-  width: 100% !important;
-  height: auto !important;
-}
-.news_san .news_img {
-  width: 100% !important;
-  height: auto;
-  float: left;
-  display: flex;
-  justify-content: space-between;
-  margin-top: 0.15rem;
-}
+
 .link_a {
   display: block;
 }

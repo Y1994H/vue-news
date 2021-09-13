@@ -2,22 +2,8 @@
   <div class="app">
     <nav>
       <header>
-        <a href="http://">快资讯</a>
+        <a href="/">益资讯</a>
       </header>
-      <!-- <ul ref="nav" class="nav-list">
-        <li
-          ref="navli"
-          class="nav_a"
-          v-for="(item, i) in newsList"
-          :data-id="item.list_dir.replace('/', '').replace('/', '')"
-          :class="active === item.id ? 'active' : 'active_a'"
-          :key="i"
-          @click="btn(item.list_dir), (active = item.id)"
-        >
-          {{ item.name }}
-          <span></span>
-        </li>
-      </ul> -->
       <ly-tab
         v-model="selectedId"
         :options="options"

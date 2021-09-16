@@ -9,6 +9,8 @@ import LyTab from 'ly-tab';
 import MescrollVue from 'mescroll.js/mescroll.vue';
 import VueLazyload from 'vue-lazyload';
 import 'normalize.css/normalize.css';
+import waterfall from 'vue-waterfall2';
+Vue.use(waterfall);
 Vue.use(LyTab);
 Vue.use(VueLazyload, {
   preLoad: 1.3,

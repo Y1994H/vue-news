@@ -6,6 +6,8 @@
       async="async"
       defer="defer"
     ></remote-js>
+    <!-- 底部 -->
+    <Tap />
   </div>
 </template>
 
@@ -13,7 +15,8 @@
 var bw = document.documentElement.clientWidth / 7.5 + "px";
 var htmlTag = document.getElementsByTagName("html")[0];
 htmlTag.style.fontSize = bw;
-
+import Tap from '@/components/tap.vue';
+//console.log(vtap)
 export default {
   components: {
     "remote-js": {
@@ -25,7 +28,9 @@ export default {
       props: {
         src: { type: String, required: true },
       },
+      
     },
+    Tap,//底部
   },
   name: "App",
   data() {
@@ -125,6 +130,8 @@ h6 {
   font-weight: 100;
 }
 #App {
+  width: 100%;
+  height: auto;
   overflow: hidden;
 }
 .mescroll-totop {

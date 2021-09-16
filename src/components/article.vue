@@ -160,7 +160,7 @@ export default {
   created() {
     let _this = this;
     //渠道号
-    _this.from = _this.getQueryVariable("from");
+    // _this.from = _this.getQueryVariable("from");
     //请求文章数据
     _this.$axios
       .get("//mini.yyrtv.com/mapi/get_artical_info?article_id=" + _this.id)
@@ -243,17 +243,17 @@ export default {
           });
     },
     // 获取地址栏参数
-    getQueryVariable(variable) {
-      var query = window.location.search.substring(1);
-      var vars = query.split("&");
-      for (var i = 0; i < vars.length; i++) {
-        var pair = vars[i].split("=");
-        if (pair[0] == variable) {
-          return pair[1];
-        }
-      }
-      return null;
-    },
+    // getQueryVariable(variable) {
+    //   var query = window.location.search.substring(1);
+    //   var vars = query.split("&");
+    //   for (var i = 0; i < vars.length; i++) {
+    //     var pair = vars[i].split("=");
+    //     if (pair[0] == variable) {
+    //       return pair[1];
+    //     }
+    //   }
+    //   return null;
+    // },
   },
 };
 </script>

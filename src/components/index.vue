@@ -635,6 +635,9 @@ export default {
 </script>
 
 <style scoped>
+body{
+  background: #fff;
+}
 .mescroll {
   position: fixed;
   top: 80px;
@@ -756,7 +759,7 @@ nav ul li {
 }
 .refresh-fixed {
   position: fixed;
-  bottom: 20px;
+  bottom: 80px;
   right: 15px;
   width: 55px;
   height: 55px;

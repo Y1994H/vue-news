@@ -32,8 +32,6 @@ async function baiduJs(baidu,baidu_box) {
                 id:ad_string,
                 container:val,
                 async:true,
-                size: '20,12',
-                display: 'inlay-fix'
             });
 
         })();

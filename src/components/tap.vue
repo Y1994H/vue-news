@@ -12,15 +12,15 @@
             return {
                 tapdata:[
                     {
-                        name:"首页",
+                        name:"新闻",
                         route:'/'
                     },
                     {
-                        name:"列表",
+                        name:"购物",
                         route:'/List'
                     },
                     {
-                        name:"视频",
+                        name:"电影",
                         route:'/Video'
                     },
                     {

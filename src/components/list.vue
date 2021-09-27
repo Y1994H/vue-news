@@ -1,7 +1,7 @@
 <template>
     <div>
         <header>
-            列表中心
+            购物中心
         </header>
         <ul class="list_ul">
             <li v-for="(item,index) in datanav" :key="index">
@@ -59,9 +59,11 @@ import data from '../static/data.json';
             }
         },
         created(){
+            let _this = this;
         },
         mounted(){},
         methods:{
+
         }
     }
 </script>

@@ -1,7 +1,7 @@
 <template>
   <mescroll-vue ref="mescroll" :down="getMescrollDown()" :up="mescrollUp"> 
   <div>
-      <header>
+    <header>
       <a href="http://">快资讯</a>
     </header>
     <div class="content">
@@ -122,6 +122,7 @@
         </ul>
       </div>
     </div>
+    <div class="kong"></div>
   </div>
 </mescroll-vue> 
 </template>
@@ -429,5 +430,9 @@ header a {
     font-size: 12px;
     text-align: center;
     color: #bbb;
+}
+.kong{
+  width: 100%;
+  height: 1.5rem;
 }
 </style>

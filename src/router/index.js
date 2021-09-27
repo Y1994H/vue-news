@@ -6,6 +6,7 @@ import Personal from '@/components/personal';
 import Video from '@/components/video';
 import List from '@/components/list';
 import List_x from '@/components/list_x';
+import Film_Details from '@/components/film_details'
 Vue.use(Router);
 const originalPush = Router.prototype.push;
 Router.prototype.push = function push(location) {
@@ -38,6 +39,10 @@ export default new Router({
     {
       path:'/List_x/:id',
       component:List_x
+    },
+    {
+      path:'/Film_Details/:id',
+      component:Film_Details
     }
   ]
 })

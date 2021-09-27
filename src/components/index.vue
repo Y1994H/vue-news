@@ -318,9 +318,9 @@ export default {
   created() {
     //导航
     let _this = this;
-    _this.getNav();
-    _this.btn();
-    _this.from = _this.getQueryString("from");
+      _this.getNav();   
+      _this.btn();
+      _this.from = _this.getQueryString("from");
   },
   mounted() {
     let _this = this;
@@ -368,8 +368,8 @@ export default {
               //导航高亮
               _this.selectedId = k;
               if(_this.active === "tuijian") {
-                _this.Newsdata(_this.active);
                 _this.hot();
+                _this.Newsdata(_this.active);
               }else {
                 _this.visible = false;
               }
@@ -463,35 +463,8 @@ export default {
       _this.onedata = [];
       //下拉信息流
       _this.dataList = [];
-      _this.$axios
-        .get(url, {
-          params: {
-            page: _this.page,
-            size: _this.size,
-          },
-        })
-        .then((response) => {
-          let res = response.data.data;
-          let advert = _this.getRandomArrayElements(
-            _this.baidu,
-            res.length / 2
-          );
-          advert.forEach((a, b) => {
-            _this.baidu_id = _this.guid();
-            res.splice((b + 1) * 2 + b, 0, {
-              id: 0,
-              url: a,
-              baidu_id: _this.baidu_id,
-            });
-          });
-          baiduJs(_this.baidu, _this.baidu_box);
-          _this.onedata = res;
-          _this.mescrollDown.use = true;
-        })
-        .catch((error) => {
-          console.log(error);
-          _this.errored = true;
-        });
+      _this.Newsdata(cid);
+      
     },
     //导航二次点击
     btn(){

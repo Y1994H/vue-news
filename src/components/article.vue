@@ -1,5 +1,5 @@
 <template>
-  <mescroll-vue ref="mescroll" :down="getMescrollDown()" :up="mescrollUp"> 
+  <!-- <mescroll-vue ref="mescroll" :down="getMescrollDown()" :up="mescrollUp">  -->
   <div>
     <header>
       <a href="http://">快资讯</a>
@@ -124,7 +124,7 @@
     </div>
     <div class="kong"></div>
   </div>
-</mescroll-vue> 
+<!-- </mescroll-vue>  -->
 </template>
 <script>
 import logoSrc from "@/image/ss.svg";
@@ -141,20 +141,20 @@ export default {
       article_content: null, //文章内容
       onedata: [], //第一次加载数据
       mescroll: null, // mescroll实例对象
-      mescrollUp: {
-        use: false,
-        auto: false, // 上拉加载的配置.
-        callback: this.upCallback, // 上拉回调,此处简写; 相当于 callback: function(page, mescroll) { }//以下是一些常用的配置,当然不写也可以的.
-        page: {
-          num: 1, //当前页 默认0,回调之前会加1; 即callback(page)会从1开始
-          size: 20, //每页数据条数,默认10
-        },
-        // toTop: {
-        //   //回到顶部按钮
-        //   src: logoSrc, //图片路径,默认null,支持网络图
-        //   offset: 1000, //列表滚动1000px才显示回到顶部按钮
-        // },
-      },
+      // mescrollUp: {
+      //   use: false,
+      //   auto: false, // 上拉加载的配置.
+      //   callback: this.upCallback, // 上拉回调,此处简写; 相当于 callback: function(page, mescroll) { }//以下是一些常用的配置,当然不写也可以的.
+      //   page: {
+      //     num: 1, //当前页 默认0,回调之前会加1; 即callback(page)会从1开始
+      //     size: 20, //每页数据条数,默认10
+      //   },
+      //   // toTop: {
+      //   //   //回到顶部按钮
+      //   //   src: logoSrc, //图片路径,默认null,支持网络图
+      //   //   offset: 1000, //列表滚动1000px才显示回到顶部按钮
+      //   // },
+      // },
       dataList: [], // 列表数据
     };
   },
@@ -216,33 +216,33 @@ export default {
     },
     downCallback() {},
     //上拉加载
-    upCallback(page, mescroll) {
-      let _this = this;
-      (_this.index_a = _this.id),
-        // 联网请求
-        _this.$axios
-          .get("https://mini.yyrtv.com/api/get_mobile_hot", {
-            params: {
-              page: page.num,
-              size: page.size,
-            },
-          })
-          .then((response) => {
-            // 请求的列表数据
-            let arr = response.data.data;
-            // 如果是第一页需手动置空列表
-            if (page.num == 1) _this.dataList = [];
-            _this.dataList = _this.dataList.concat(arr);
-            // 数据渲染成功后,隐藏下拉刷新的状态
-            _this.$nextTick(() => {
-              mescroll.endSuccess(arr.length);
-            });
-          })
-          .catch((e) => {
-            // 联网失败的回调,隐藏下拉刷新和上拉加载的状态;
-            mescroll.endErr();
-          });
-    },
+    // upCallback(page, mescroll) {
+    //   let _this = this;
+    //   (_this.index_a = _this.id),
+    //     // 联网请求
+    //     _this.$axios
+    //       .get("https://mini.yyrtv.com/api/get_mobile_hot", {
+    //         params: {
+    //           page: page.num,
+    //           size: page.size,
+    //         },
+    //       })
+    //       .then((response) => {
+    //         // 请求的列表数据
+    //         let arr = response.data.data;
+    //         // 如果是第一页需手动置空列表
+    //         if (page.num == 1) _this.dataList = [];
+    //         _this.dataList = _this.dataList.concat(arr);
+    //         // 数据渲染成功后,隐藏下拉刷新的状态
+    //         _this.$nextTick(() => {
+    //           mescroll.endSuccess(arr.length);
+    //         });
+    //       })
+    //       .catch((e) => {
+    //         // 联网失败的回调,隐藏下拉刷新和上拉加载的状态;
+    //         mescroll.endErr();
+    //       });
+    // },
     // 获取地址栏参数
     // getQueryVariable(variable) {
     //   var query = window.location.search.substring(1);

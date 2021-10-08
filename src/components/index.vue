@@ -288,6 +288,7 @@ export default {
         },
       },
       mescrollUp: {
+        isLock: false,
         use: true,
         auto: false, // 上拉加载的配置.
         callback: this.upCallback, // 上拉回调,此处简写; 相当于 callback: function(page, mescroll) { }//以下是一些常用的配置,当然不写也可以的.
@@ -313,17 +314,18 @@ export default {
       // 地址栏的参数值赋值
       newQuery.active = newValue;
       this.$router.push({ path, query: newQuery });
+      
     },
   },
   created() {
     //导航
     let _this = this;
       _this.getNav();   
-      _this.btn();
       _this.from = _this.getQueryString("from");
   },
   mounted() {
     let _this = this;
+    // _this.btn(); 
     _this.randfun(10000, 99999);
   },
   methods: {
@@ -411,7 +413,6 @@ export default {
       } else {
         _this.visible = false;
       }
-
       _this.$axios
         .get(url, {
           params: {
@@ -437,7 +438,7 @@ export default {
           //传值百度广告id和百度盒子id
           baiduJs(_this.baidu, _this.baidu_box);
           _this.onedata = res;
-          _this.mescrollDown.use = true;
+          _this.mescrollDown.use = false;
         })
         .catch((error) => {
           console.log(error);
@@ -446,7 +447,7 @@ export default {
     },
     //点击导航
     handleChange(item, index) {
-      let _this = this;
+      let _this = this; 
       let cid = item.list_dir.replace("/", "").replace("/", "");
       let url = _this.newsurl + cid;
       _this.page = 1;
@@ -470,9 +471,12 @@ export default {
     btn(){
       let _this = this;
       $("body").on("click", '.ly-tab-list a', function () {
+        
+        console.log($(this).attr('class').indexOf('atcive-ly'));
             if($(this).attr('class').indexOf('atcive-ly') == -1){
               $(this).addClass('atcive-ly').siblings().removeClass('atcive-ly');
             }else{
+              console.log(111111);
               _this.mescroll.showDownScroll();
             setTimeout(function () {
               _this.mescroll.triggerDownScroll();
@@ -554,7 +558,6 @@ export default {
             // 数据渲染成功后,隐藏下拉刷新的状态
             _this.$nextTick(() => {
               mescroll.endSuccess(arr.length);
-              _this.mescrollDown.use = true;
               $(".noti_hide").html("为您推荐" + arr.length + "条更新");
             });
           } else {

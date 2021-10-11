@@ -314,7 +314,6 @@ export default {
       // 地址栏的参数值赋值
       newQuery.active = newValue;
       this.$router.push({ path, query: newQuery });
-      
     },
   },
   created() {
